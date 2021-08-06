@@ -18,8 +18,11 @@ describe("#onFormSubmit()", () => {
 
     onFormSubmit(mockEvent as any);
 
-    expect(global.Logger.log).toHaveBeenCalledWith("Hello, world! (from circleci) [test only push on main]", {
-      event: mockEvent,
-    });
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      "Hello, world! (from circleci) [test only push on main]",
+      {
+        event: mockEvent,
+      }
+    );
   });
 });
