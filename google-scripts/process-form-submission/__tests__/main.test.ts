@@ -11,9 +11,15 @@ describe("#onFormSubmit()", () => {
     jest.resetAllMocks();
   });
 
-  it("should call the logger with the provided event", () => {
+  it("should call the logger with the question names and values from the form submission", () => {
+    const mockFormSubmission = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+
     const mockEvent = {
       sample: "event",
+      namedValues: mockFormSubmission,
     };
 
     onFormSubmit(mockEvent as any);
