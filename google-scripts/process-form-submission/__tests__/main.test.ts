@@ -31,4 +31,25 @@ describe("#onFormSubmit()", () => {
       }
     );
   });
+
+  it("should call the logger with the data of the cells that were edited", () => {
+    const mockEvent = {
+      sample: "event",
+      range: {
+        columnEnd: 10,
+        columnStart: 1,
+        rowEnd: 2,
+        rowStart: 2,
+      },
+    };
+
+    onFormSubmit(mockEvent as any);
+
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockEvent.range),
+      {
+        event: mockEvent,
+      }
+    );
+  });
 });
