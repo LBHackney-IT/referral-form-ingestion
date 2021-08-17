@@ -23,7 +23,7 @@ jobs:
 
   install-dependencies:
     executor: node-executor
-    working_directory: ~/google-scripts
+    working_directory: ~/project/google-scripts
     steps:
       - *attach_workspace
       - restore_cache:
@@ -41,7 +41,7 @@ jobs:
 
   unit-tests:
     executor: node-executor
-    working_directory: ~/google-scripts
+    working_directory: ~/project/google-scripts
     steps:
       - *attach_workspace
       - run:
