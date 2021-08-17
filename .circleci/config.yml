@@ -11,3 +11,10 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - welcome/run
+
+# 1. in circle ci we need to create clasp.json with correct script id and rootDir set
+# 2. Goto relevant spreadsheet, tools -> script editor -> settings -> script id, clasp clone ${scriptId}
+# 3. Login manually once to generate initial clasprc.json file
+# 4. Store the .clasprc.json in an environment variable in CircleCI
+# 5. Create the .clasprc.json file in CircleCI using the env var from step 3
+# 6. Call `clasp push` from Circle
