@@ -30,10 +30,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn --frozen-lockfile
-      - run:
-          name: Install Clasp
-          command: npm i -g @google/clasp          
+          command: yarn --frozen-lockfile    
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
@@ -53,6 +50,15 @@ jobs:
       - run:
           name: Run tests
           command: yarn test
+
+  clasp-push:
+    executor: node-executor
+    working_directory: ~/project/google-scripts
+    steps:    
+      - *attach_workspace
+      - run:    
+          name: Clasp push          
+          command: ./node_modules/@google/clasp/build/src/index.js push
 
 workflows:
   version: 2
