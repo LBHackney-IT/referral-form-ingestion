@@ -12,14 +12,20 @@ references:
       at: *workspace_root
 
 jobs:
-  install-dependencies:
+  checkout:
     executor: node-executor
     steps:
       - *attach_workspace
       - checkout
-      - run:
-          name: Change to directory with code
-          command: cd google-scripts
+      - persist_to_workspace:
+          root: *workspace_root
+          paths: .
+
+  install-dependencies:
+    executor: node-executor
+    working_directory: ~/google-scripts
+    steps:
+      - *attach_workspace
       - restore_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
@@ -35,6 +41,7 @@ jobs:
 
   unit-tests:
     executor: node-executor
+    working_directory: ~/google-scripts
     steps:
       - *attach_workspace
       - run:
@@ -51,7 +58,10 @@ workflows:
   version: 2
   process-form-submission:
     jobs:
-      - install-dependencies
+      - checkout
+      - install-dependencies:
+          requires:
+            - checkout
       - unit-tests:
           requires:
             - install-dependencies
