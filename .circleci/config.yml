@@ -71,6 +71,9 @@ workflows:
       - unit-tests:
           requires:
             - install-dependencies
+      - clasp-push:
+          requires:
+            - unit-tests           
 # 1. in circle ci we need to create clasp.json with correct script id and rootDir set
 # 2. Goto relevant spreadsheet, tools -> script editor -> settings -> script id, clasp clone ${scriptId}
 # 3. Login manually once to generate initial clasprc.json file
