@@ -45,9 +45,6 @@ jobs:
     steps:
       - *attach_workspace
       - run:
-          name: Change to directory with code
-          command: cd google-scripts
-      - run:
           name: Run typecheck
           command: yarn tsc --noEmit
       - run:
