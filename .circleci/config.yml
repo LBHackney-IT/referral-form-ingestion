@@ -51,6 +51,19 @@ jobs:
           name: Run tests
           command: yarn test
 
+  create-clasprc.json:
+    executor: node-executor
+    working_directory: /home/circleci
+    steps:
+      - *attach_workspace
+      - run:
+        name: create clasprc.json file in root
+        command: jq --null-input \
+        --arg scope "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly" \
+        --arg token_type "bearer" \
+        --arg refresh_token $CLASP_REFRESH_TOKEN \
+        '{"scope": $scope, "token_type": $token_type, "refresh_token": $refresh_token}' > .clasprc.json
+
   clasp-push:
     executor: node-executor
     working_directory: ~/project/google-scripts
@@ -73,7 +86,7 @@ workflows:
             - install-dependencies
       - clasp-push:
           requires:
-            - unit-tests           
+            - create-clasprc.json         
 # 1. in circle ci we need to create clasp.json with correct script id and rootDir set
 # 2. Goto relevant spreadsheet, tools -> script editor -> settings -> script id, clasp clone ${scriptId}
 # 3. Login manually once to generate initial clasprc.json file
