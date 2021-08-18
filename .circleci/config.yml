@@ -58,7 +58,7 @@ jobs:
       - *attach_workspace
       - run:
           name: create clasprc.json file in root
-          command: jq --arg key0 'scope' --arg value0 'https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly' --arg key1 'token_type' --arg value1 'bearer' --arg key2 'refresh_token' --arg value2 $refresh_token '. | .[$key0]=$value0 | .[$key1]=$value1 | .[$key2]=$value2' \<<< '{}' > .clasprc.json
+          command: echo {\"scope\": \"https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly\",\"token_type\": \"bearer\", \"refresh_token\": \"$CLASP_REFRESH_TOKEN\"} > .clasprc.json
       - run:
           name: pwd
           command: pwd
