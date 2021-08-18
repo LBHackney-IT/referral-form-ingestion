@@ -18,7 +18,7 @@ describe("#onFormSubmit()", () => {
 
     onFormSubmit(mockEvent as any);
 
-    expect(global.Logger.log).toHaveBeenCalledWith("Hello, world!", {
+    expect(global.Logger.log).toHaveBeenCalledWith("Hello, world! (from circleci)", {
       event: mockEvent,
     });
   });
