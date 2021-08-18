@@ -64,7 +64,7 @@ jobs:
           command: pwd
       - run:
           name: ls
-          command: ls
+          command: ls -l
 
       
 
