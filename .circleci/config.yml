@@ -63,7 +63,7 @@ jobs:
       - run:
           name: create appscript.json file
           command: |
-            echo "{\"timezone\":\"Europe/London",\"dependencies\":{},\"exceptionLogging\":\"STACKDRIVER",\"runtimeVersion\":\"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
+            echo "{\"timeZone\": \"Europe\/London\",\"dependencies\": {},\"exceptionLogging\": \"STACKDRIVER\",\"runtimeVersion\": \"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
       - run:    
           name: Clasp push          
           command: ./node_modules/@google/clasp/build/src/index.js push
