@@ -58,11 +58,7 @@ jobs:
       - *attach_workspace
       - run:
         name: create clasprc.json file in root
-        command: jq --null-input \
-        --arg scope "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly" \
-        --arg token_type "bearer" \
-        --arg refresh_token $CLASP_REFRESH_TOKEN \
-        '{"scope": $scope, "token_type": $token_type, "refresh_token": $refresh_token}' > .clasprc.json
+        command: jq --null-input --arg scope "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly" --arg token_type "bearer" --arg refresh_token $CLASP_REFRESH_TOKEN '{"scope": $scope, "token_type": $token_type, "refresh_token": $refresh_token}' > .clasprc.json
 
   clasp-push:
     executor: node-executor
