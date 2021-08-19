@@ -80,7 +80,6 @@ workflows:
           requires:
             - install-dependencies
       - clasp-push:
-          type: approval
           requires:
             - unit-tests
           filters:
