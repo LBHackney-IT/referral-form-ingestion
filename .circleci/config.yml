@@ -1,13 +1,88 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+
+executors:
+  node-executor:
+    docker:
+      - image: circleci/node:14.15.5
+
+references:
+  workspace_root: &workspace_root '~'
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+
+jobs:
+  checkout:
+    executor: node-executor
+    steps:
+      - *attach_workspace
+      - checkout
+      - persist_to_workspace:
+          root: *workspace_root
+          paths: .
+
+  install-dependencies:
+    executor: node-executor
+    working_directory: ~/project/google-scripts
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn --frozen-lockfile    
+      - save_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
+      - persist_to_workspace:
+          root: *workspace_root
+          paths: .
+
+  unit-tests:
+    executor: node-executor
+    working_directory: ~/project/google-scripts
+    steps:
+      - *attach_workspace
+      - run:
+          name: Run typecheck
+          command: yarn tsc --noEmit
+      - run:
+          name: Run tests
+          command: yarn test
+
+  clasp-push:
+    executor: node-executor
+    working_directory: ~/project/google-scripts
+    steps:    
+      - *attach_workspace
+      - run:
+          name: create clasprc.json file in root
+          command: |
+            echo "{\"token\":{\"scope\":\"https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly\",\"token_type\":\"bearer\",\"refresh_token\":\"$CLASP_REFRESH_TOKEN\",\"access_token\":\"\"}}" > ~/.clasprc.json
+      - run:
+          name: create appsscript.json file
+          command: |
+            echo "{\"timeZone\": \"Europe\/London\",\"dependencies\": {},\"exceptionLogging\": \"STACKDRIVER\",\"runtimeVersion\": \"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
+      - run:    
+          name: Clasp push          
+          command: ./node_modules/@google/clasp/build/src/index.js push --force
+
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  version: 2
+  process-form-submission:
     jobs:
-      - welcome/run
+      - checkout
+      - install-dependencies:
+          requires:
+            - checkout
+      - unit-tests:
+          requires:
+            - install-dependencies
+      - clasp-push:
+          type: approval
+          requires:
+            - unit-tests
+          filters:
+            branches:
+              only: main     
