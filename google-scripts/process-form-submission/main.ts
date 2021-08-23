@@ -1,7 +1,8 @@
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
-  Logger.log(JSON.stringify(event.namedValues), {
+  var formData = JSON.stringify(event.namedValues);
+  Logger.log(formData, {
     event,
   });
 }
