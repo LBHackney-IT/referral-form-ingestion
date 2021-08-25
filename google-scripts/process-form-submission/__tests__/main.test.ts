@@ -1,10 +1,21 @@
 import { onFormSubmit } from "../main";
 
 global.Logger = {
-  clear: () => {},
-  getLog: () => "",
   log: jest.fn(),
-};
+} as unknown as GoogleAppsScript.Base.Logger;
+
+class MockSpreadsheetApp {
+  static mockActiveSpreadsheet = {
+    getSheetByName: jest.fn(),
+  } as unknown as GoogleAppsScript.Spreadsheet.Spreadsheet;
+
+  getActiveSpreadsheet() {
+    return MockSpreadsheetApp.mockActiveSpreadsheet;
+  }
+}
+
+global.SpreadsheetApp =
+  new MockSpreadsheetApp() as unknown as GoogleAppsScript.Spreadsheet.SpreadsheetApp;
 
 describe("#onFormSubmit()", () => {
   beforeEach(() => {
@@ -18,9 +29,9 @@ describe("#onFormSubmit()", () => {
     const mockEvent = {
       sample: "event",
       namedValues: helloString,
-    };
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
-    onFormSubmit(mockEvent as any);
+    onFormSubmit(mockEvent);
 
     expect(global.Logger.log).toHaveBeenCalledWith(
       JSON.stringify("Hello, world! (from circleci) [test only push on main]"),
@@ -39,9 +50,9 @@ describe("#onFormSubmit()", () => {
     const mockEvent = {
       sample: "event",
       namedValues: mockFormSubmission,
-    };
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
-    onFormSubmit(mockEvent as any);
+    onFormSubmit(mockEvent);
 
     expect(global.Logger.log).toHaveBeenCalledWith(
       JSON.stringify(mockEvent.namedValues),
@@ -49,5 +60,17 @@ describe("#onFormSubmit()", () => {
         event: mockEvent,
       }
     );
+  });
+
+  it("should set a unique ID for the form data in the spreadsheet", () => {
+    const mockEvent = {
+      sample: "event",
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    onFormSubmit(mockEvent);
+
+    expect(
+      MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName
+    ).toHaveBeenCalledWith("MASH_submissions");
   });
 });
