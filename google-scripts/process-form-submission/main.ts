@@ -13,12 +13,14 @@ export function onFormSubmit(
     `${REFERRALS_SHEET_NAME}`
   );
   // if (activeSheet != null) {
-  //   const IdColumnPosition = 1;
-  //   var currentFormDataRange = event.range;
-  //   var previousRowPosition = currentFormDataRange.getRow() - 1;
-  //   var previousRowId = activeSheet
-  //     ?.getRange(previousRowPosition, IdColumnPosition)
-  //     .getValue();
+  const IdColumnPosition = 1;
+  var currentFormDataRange = event.range;
+  var previousRowPosition = currentFormDataRange.getRow() - 1;
+  console.log(activeSheet);
+  activeSheet?.getRange(previousRowPosition, IdColumnPosition).getValue();
+  // var previousRowId = activeSheet
+  //   ?.getRange(previousRowPosition, IdColumnPosition)
+  //   .getValue();
   //   var currentFormId = previousRowId + 1;
 
   //   activeSheet
