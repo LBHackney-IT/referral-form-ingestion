@@ -54,6 +54,8 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should set a unique ID for the form data in the spreadsheet", () => {
+    const REFERRALS_SHEET_NAME = process.env.REFERRALS_SHEET_NAME;
+
     const mockEvent = {
       sample: "event",
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
@@ -62,6 +64,6 @@ describe("#onFormSubmit()", () => {
 
     expect(
       MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName
-    ).toHaveBeenCalledWith("MASH_submissions");
+    ).toHaveBeenCalledWith(`${REFERRALS_SHEET_NAME}`);
   });
 });

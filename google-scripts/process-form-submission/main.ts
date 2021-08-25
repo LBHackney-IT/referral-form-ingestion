@@ -1,3 +1,5 @@
+const REFERRALS_SHEET_NAME = process.env.REFERRALS_SHEET_NAME;
+
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
@@ -7,8 +9,9 @@ export function onFormSubmit(
     event,
   });
 
-  // const activeSheet =
-  SpreadsheetApp.getActiveSpreadsheet().getSheetByName("MASH_submissions");
+  const activeSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+    `${REFERRALS_SHEET_NAME}`
+  );
   // if (activeSheet != null) {
   //   const IdColumnPosition = 1;
   //   var currentFormDataRange = event.range;
