@@ -1,18 +1,9 @@
+import { MockSpreadsheetApp } from "../google_mocks";
 import { onFormSubmit } from "../main";
 
 global.Logger = {
   log: jest.fn(),
 } as unknown as GoogleAppsScript.Base.Logger;
-
-class MockSpreadsheetApp {
-  static mockActiveSpreadsheet = {
-    getSheetByName: jest.fn(),
-  } as unknown as GoogleAppsScript.Spreadsheet.Spreadsheet;
-
-  getActiveSpreadsheet() {
-    return MockSpreadsheetApp.mockActiveSpreadsheet;
-  }
-}
 
 global.SpreadsheetApp =
   new MockSpreadsheetApp() as unknown as GoogleAppsScript.Spreadsheet.SpreadsheetApp;
