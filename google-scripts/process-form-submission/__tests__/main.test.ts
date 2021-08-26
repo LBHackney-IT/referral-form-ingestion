@@ -13,53 +13,14 @@ describe("#onFormSubmit()", () => {
       new MockSpreadsheetApp() as unknown as GoogleAppsScript.Spreadsheet.SpreadsheetApp;
   });
 
-  it("should call the logger with the provided event", () => {
-    const helloString =
-      "Hello, world! (from circleci) [test only push on main]";
+  it("should get the active sheet for storing the MASH referrals", () => {
+    (
+      MockSpreadsheetApp.mockActiveSpreadsheet
+        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
+    ).mockImplementation(() => {
+      return MockSpreadsheetApp.mockActiveSheet;
+    });
 
-    const mockEvent = {
-      sample: "event",
-      namedValues: helloString,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
-    onFormSubmit(mockEvent);
-
-    expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify("Hello, world! (from circleci) [test only push on main]"),
-      {
-        event: mockEvent,
-      }
-    );
-  });
-
-  it("should call the logger with the question names and values from the form submission", () => {
-    const mockFormSubmission = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormSubmission,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
-    onFormSubmit(mockEvent);
-
-    expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify(mockEvent.namedValues),
-      {
-        event: mockEvent,
-      }
-    );
-  });
-
-  it("should get the sheet for the mash submissions", () => {
     const mockEvent = {
       sample: "event",
       range: {
@@ -74,6 +35,62 @@ describe("#onFormSubmit()", () => {
     ).toHaveBeenCalledWith("EXAMPLE_SHEET_NAME");
   });
 
+  it("should return an error if the active sheet is not found", () => {
+    (
+      MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName as jest.Mock<null>
+    ).mockImplementation(() => {
+      return null;
+    });
+
+    const sheetNotFoundError = new Error(
+      "Sheet by name method returned null or undefined"
+    );
+
+    const mockEvent = {
+      sample: "event",
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    try {
+      onFormSubmit(mockEvent);
+    } catch (e) {
+      expect(e).toEqual(sheetNotFoundError);
+    }
+  });
+
+  it("should log the form data, event & error message when an error occurs", () => {
+    const sheetNotFoundError = new Error(
+      "Sheet by name method returned null or undefined"
+    );
+
+    const mockFormSubmission = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+
+    const mockEvent = {
+      sample: "event",
+      namedValues: mockFormSubmission,
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    try {
+      onFormSubmit(mockEvent);
+    } catch (e) {}
+
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockEvent.namedValues),
+      {
+        event: mockEvent,
+      },
+      sheetNotFoundError
+    );
+  });
+
   it("should get the range for the row above where the form data was submitted", () => {
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
@@ -84,7 +101,7 @@ describe("#onFormSubmit()", () => {
 
     const currentRow = 7;
     const previousRow = 6;
-    const formIdColumn = 1;
+    const setFormIdColumn = 1;
 
     const mockEvent = {
       sample: "event",
@@ -99,7 +116,7 @@ describe("#onFormSubmit()", () => {
 
     expect(MockSpreadsheetApp.mockActiveSheet.getRange).toHaveBeenCalledWith(
       previousRow,
-      formIdColumn
+      setFormIdColumn
     );
   });
 
