@@ -6,13 +6,26 @@ export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
   var formData = event.namedValues;
-
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
     );
     var uniqueId = setUniqueIdOnSubmission(sheet);
-    formData.FormSubmissionId = [`${uniqueId}`]; // Update object to contain it's ID
+    // Update object to contain its ID
+    formData.FormSubmissionId = [`${uniqueId}`];
+
+    sendDataToS3();
+  } catch (e) {
+    Logger.log(
+      JSON.stringify(formData),
+      {
+        event,
+      },
+      e
+    );
+  }
+
+  function sendDataToS3() {
     var options = {
       method: "put",
       headers: { "X-API-KEY": `${S3_ENDPOINT_API_KEY}` },
@@ -22,14 +35,6 @@ export function onFormSubmit(
     UrlFetchApp.fetch(
       `${S3_ENDPOINT_API}/form-submissions/${uniqueId}`,
       options
-    );
-  } catch (e) {
-    Logger.log(
-      JSON.stringify(formData),
-      {
-        event,
-      },
-      e
     );
   }
 
