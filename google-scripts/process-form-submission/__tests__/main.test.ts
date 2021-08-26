@@ -82,15 +82,24 @@ describe("#onFormSubmit()", () => {
       return MockSpreadsheetApp.mockActiveSheet;
     });
 
+    const currentRow = 7;
+    const previousRow = 6;
+    const formIdColumn = 1;
+
     const mockEvent = {
       sample: "event",
       range: {
-        getRow() {},
+        getRow() {
+          return currentRow;
+        },
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     onFormSubmit(mockEvent);
 
-    expect(MockSpreadsheetApp.mockActiveSheet.getRange).toHaveBeenCalled();
+    expect(MockSpreadsheetApp.mockActiveSheet.getRange).toHaveBeenCalledWith(
+      previousRow,
+      formIdColumn
+    );
   });
 });
