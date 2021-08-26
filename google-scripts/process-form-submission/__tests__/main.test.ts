@@ -1,9 +1,5 @@
 import { MockSpreadsheetApp } from "../google_mocks";
 import { onFormSubmit } from "../main";
-import axios from "axios";
-
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("#onFormSubmit()", () => {
   beforeEach(() => {
@@ -188,62 +184,6 @@ describe("#onFormSubmit()", () => {
 
     expect(MockSpreadsheetApp.mockActiveRange.setValue).toHaveBeenCalledWith(
       100
-    );
-  });
-
-  it("should send the form data with its ID to AWS for further processing", () => {
-    const mockFormSubmission = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const previousFormId = 99;
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormSubmission,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
-    mockedAxios.patch.mockResolvedValue({
-      data: { formData: JSON.stringify(mockEvent.namedValues) },
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveSpreadsheet
-        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveSheet;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveSheet
-        .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveRange;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveRange.getValue as jest.Mock<number>
-    ).mockImplementation(() => {
-      return previousFormId;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveRange
-        .setValue as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveRange;
-    });
-
-    onFormSubmit(mockEvent);
-
-    expect(mockedAxios.patch).toHaveBeenCalledWith(
-      `EXAMPLE_ENDPOINT/form-submissions/100`,
-      { id: 100, formData: JSON.stringify(mockEvent.namedValues) },
-      { headers: { "x-api-key": "EXAMPLE_API_KEY" } }
     );
   });
 });

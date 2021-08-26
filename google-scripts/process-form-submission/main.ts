@@ -1,4 +1,3 @@
-import axios from "axios";
 const REFERRALS_SHEET_NAME = "EXAMPLE_SHEET_NAME";
 const S3_ENDPOINT_API = "EXAMPLE_ENDPOINT";
 const S3_ENDPOINT_API_KEY = "EXAMPLE_API_KEY";
@@ -12,8 +11,7 @@ export function onFormSubmit(
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
     );
-    var uniqueId = setUniqueIdOnSubmission(sheet);
-    sendFormDataToS3(formData, uniqueId);
+    setUniqueIdOnSubmission(sheet);
   } catch (e) {
     Logger.log(
       formData,
@@ -48,25 +46,5 @@ export function onFormSubmit(
       currentFormIdCell.setValue(currentFormId);
       return currentFormId;
     }
-  }
-
-  async function sendFormDataToS3(
-    formData: string,
-    uniqueId: number
-  ): Promise<void> {
-    const apiKeyHeader = {
-      "x-api-key": S3_ENDPOINT_API_KEY,
-    };
-    const { data } = await axios.patch(
-      `${S3_ENDPOINT_API}/form-submissions/${uniqueId}`,
-      {
-        id: uniqueId,
-        formData,
-      },
-      {
-        headers: apiKeyHeader,
-      }
-    );
-    return data;
   }
 }
