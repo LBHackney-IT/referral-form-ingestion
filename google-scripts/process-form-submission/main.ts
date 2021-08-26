@@ -16,8 +16,8 @@ export function onFormSubmit(
   const IdColumnPosition = 1;
   var currentFormDataRange = event.range;
   var previousRowPosition = currentFormDataRange.getRow() - 1;
-  console.log(activeSheet);
-  activeSheet?.getRange(previousRowPosition, IdColumnPosition).getValue();
+  // console.log(activeSheet);
+  activeSheet?.getRange(previousRowPosition, IdColumnPosition);
   // var previousRowId = activeSheet
   //   ?.getRange(previousRowPosition, IdColumnPosition)
   //   .getValue();
