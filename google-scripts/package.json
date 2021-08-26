@@ -9,9 +9,7 @@
     "@google/clasp": "^2.4.0",
     "@types/google-apps-script": "^1.0.37",
     "@types/jest": "^26.0.24",
-    "@types/jest-when": "^2.7.3",
     "jest": "^27.0.6",
-    "jest-when": "^3.3.1",
     "ts-jest": "^27.0.4"
   }
 }
