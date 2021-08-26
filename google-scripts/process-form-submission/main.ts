@@ -1,4 +1,4 @@
-const REFERRALS_SHEET_NAME = process.env.REFERRALS_SHEET_NAME;
+const REFERRALS_SHEET_NAME = "EXAMPLE_SHEET_NAME";
 
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit

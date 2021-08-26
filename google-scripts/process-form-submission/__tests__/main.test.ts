@@ -1,6 +1,5 @@
 import { MockSpreadsheetApp } from "../google_mocks";
 import { onFormSubmit } from "../main";
-import { when } from "jest-when";
 
 describe("#onFormSubmit()", () => {
   beforeEach(() => {
@@ -61,8 +60,6 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should get the sheet for the mash submissions", () => {
-    const REFERRALS_SHEET_NAME = process.env.REFERRALS_SHEET_NAME;
-
     const mockEvent = {
       sample: "event",
       range: {
@@ -74,15 +71,16 @@ describe("#onFormSubmit()", () => {
 
     expect(
       MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName
-    ).toHaveBeenCalledWith(`${REFERRALS_SHEET_NAME}`);
+    ).toHaveBeenCalledWith("EXAMPLE_SHEET_NAME");
   });
 
   it("should find the region of the sheet where the data was inserted", () => {
-    const REFERRALS_SHEET_NAME = process.env.REFERRALS_SHEET_NAME;
-
-    when(MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName)
-      .calledWith(`${REFERRALS_SHEET_NAME}`)
-      .mockReturnValue(MockSpreadsheetApp.mockActiveSheet);
+    (
+      MockSpreadsheetApp.mockActiveSpreadsheet
+        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
+    ).mockImplementationOnce(() => {
+      return MockSpreadsheetApp.mockActiveSheet;
+    });
 
     const mockEvent = {
       sample: "event",
