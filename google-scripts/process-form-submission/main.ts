@@ -22,10 +22,12 @@ export function onFormSubmit(
   );
 
   var previousFormDataId = previousRowRange?.getValue();
-  //   var currentFormId = previousRowId + 1;
+  var currentFormId = previousFormDataId + 1;
 
-  //   activeSheet
-  //     .getRange(currentFormDataRange.getRow(), IdColumnPosition)
-  //     .setValue(currentFormId);
+  var currentFormIdCell = activeSheet?.getRange(
+    currentFormDataRange.getRow(),
+    IdColumnPosition
+  );
+  currentFormIdCell?.setValue(currentFormId);
   // }
 }

@@ -78,7 +78,7 @@ describe("#onFormSubmit()", () => {
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
-    ).mockImplementationOnce(() => {
+    ).mockImplementation(() => {
       return MockSpreadsheetApp.mockActiveSheet;
     });
 
@@ -107,15 +107,15 @@ describe("#onFormSubmit()", () => {
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
-    ).mockImplementationOnce(() => {
+    ).mockImplementation(() => {
       return MockSpreadsheetApp.mockActiveSheet;
     });
 
     (
       MockSpreadsheetApp.mockActiveSheet
         .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
-    ).mockImplementationOnce(() => {
-      return MockSpreadsheetApp.mockPreviousRowRange;
+    ).mockImplementation(() => {
+      return MockSpreadsheetApp.mockActiveRange;
     });
 
     const mockEvent = {
@@ -127,6 +127,46 @@ describe("#onFormSubmit()", () => {
 
     onFormSubmit(mockEvent);
 
-    expect(MockSpreadsheetApp.mockPreviousRowRange.getValue).toHaveBeenCalled();
+    expect(MockSpreadsheetApp.mockActiveRange.getValue).toHaveBeenCalled();
+  });
+
+  it("should set a next value as the ID for the current form data entry", () => {
+    const currentRow = 11;
+    const previousFormId = 99;
+
+    const mockEvent = {
+      sample: "event",
+      range: {
+        getRow() {
+          return currentRow;
+        },
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    (
+      MockSpreadsheetApp.mockActiveSpreadsheet
+        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
+    ).mockImplementation(() => {
+      return MockSpreadsheetApp.mockActiveSheet;
+    });
+
+    (
+      MockSpreadsheetApp.mockActiveSheet
+        .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
+    ).mockImplementation(() => {
+      return MockSpreadsheetApp.mockActiveRange;
+    });
+
+    (
+      MockSpreadsheetApp.mockActiveRange.getValue as jest.Mock<number>
+    ).mockImplementation(() => {
+      return previousFormId;
+    });
+
+    onFormSubmit(mockEvent);
+
+    expect(MockSpreadsheetApp.mockActiveRange.setValue).toHaveBeenCalledWith(
+      100
+    );
   });
 });

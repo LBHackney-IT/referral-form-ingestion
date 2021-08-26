@@ -7,8 +7,9 @@ export class MockSpreadsheetApp {
     getRange: jest.fn(),
   } as unknown as GoogleAppsScript.Spreadsheet.Sheet;
 
-  static mockPreviousRowRange = {
+  static mockActiveRange = {
     getValue: jest.fn(),
+    setValue: jest.fn(),
   } as unknown as GoogleAppsScript.Spreadsheet.Range;
 
   getActiveSpreadsheet() {
