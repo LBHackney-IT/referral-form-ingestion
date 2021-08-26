@@ -5,16 +5,27 @@ const S3_ENDPOINT_API_KEY = "EXAMPLE_API_KEY";
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
-  var formData = JSON.stringify(event.namedValues);
+  var formData = event.namedValues;
 
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
     );
-    setUniqueIdOnSubmission(sheet);
+    var uniqueId = setUniqueIdOnSubmission(sheet);
+    formData.FormSubmissionId = [`${uniqueId}`]; // Update object to contain it's ID
+    var options = {
+      method: "put",
+      headers: { "X-API-KEY": `${S3_ENDPOINT_API_KEY}` },
+      contentType: "application/json",
+      payload: JSON.stringify(formData),
+    } as GoogleAppsScript.URL_Fetch.URLFetchRequestOptions;
+    UrlFetchApp.fetch(
+      `${S3_ENDPOINT_API}/form-submissions/${uniqueId}`,
+      options
+    );
   } catch (e) {
     Logger.log(
-      formData,
+      JSON.stringify(formData),
       {
         event,
       },

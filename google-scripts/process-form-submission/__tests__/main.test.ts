@@ -11,6 +11,10 @@ describe("#onFormSubmit()", () => {
 
     global.SpreadsheetApp =
       new MockSpreadsheetApp() as unknown as GoogleAppsScript.Spreadsheet.SpreadsheetApp;
+
+    global.UrlFetchApp = {
+      fetch: jest.fn(),
+    } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
   });
 
   it("should get the active sheet for storing the MASH referrals", () => {
@@ -184,6 +188,67 @@ describe("#onFormSubmit()", () => {
 
     expect(MockSpreadsheetApp.mockActiveRange.setValue).toHaveBeenCalledWith(
       100
+    );
+  });
+
+  it("should send the form data with its ID to AWS for further processing", () => {
+    const mockFormSubmission = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+
+    const previousFormId = 99;
+
+    const mockEvent = {
+      sample: "event",
+      namedValues: mockFormSubmission,
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    (
+      MockSpreadsheetApp.mockActiveSpreadsheet
+        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
+    ).mockImplementation(() => {
+      return MockSpreadsheetApp.mockActiveSheet;
+    });
+
+    (
+      MockSpreadsheetApp.mockActiveSheet
+        .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
+    ).mockImplementation(() => {
+      return MockSpreadsheetApp.mockActiveRange;
+    });
+
+    (
+      MockSpreadsheetApp.mockActiveRange.getValue as jest.Mock<number>
+    ).mockImplementation(() => {
+      return previousFormId;
+    });
+
+    (
+      MockSpreadsheetApp.mockActiveRange
+        .setValue as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
+    ).mockImplementation(() => {
+      return MockSpreadsheetApp.mockActiveRange;
+    });
+
+    onFormSubmit(mockEvent);
+
+    var formDataWithId = mockEvent.namedValues;
+    formDataWithId.FormSubmissionId = ["100"];
+
+    var options = {
+      method: "put",
+      headers: { "X-API-KEY": "EXAMPLE_API_KEY" },
+      contentType: "application/json",
+      payload: JSON.stringify(formDataWithId),
+    };
+
+    expect(global.UrlFetchApp.fetch).toHaveBeenCalledWith(
+      `EXAMPLE_ENDPOINT/form-submissions/100`,
+      options
     );
   });
 });
