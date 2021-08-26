@@ -1,11 +1,15 @@
 export class MockSpreadsheetApp {
+  static mockActiveSpreadsheet = {
+    getSheetByName: jest.fn(),
+  } as unknown as GoogleAppsScript.Spreadsheet.Spreadsheet;
+
   static mockActiveSheet = {
     getRange: jest.fn(),
   } as unknown as GoogleAppsScript.Spreadsheet.Sheet;
 
-  static mockActiveSpreadsheet = {
-    getSheetByName: jest.fn(),
-  } as unknown as GoogleAppsScript.Spreadsheet.Spreadsheet;
+  static mockPreviousRowRange = {
+    getValue: jest.fn(),
+  } as unknown as GoogleAppsScript.Spreadsheet.Range;
 
   getActiveSpreadsheet() {
     return MockSpreadsheetApp.mockActiveSpreadsheet;

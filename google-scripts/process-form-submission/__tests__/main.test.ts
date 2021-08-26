@@ -74,7 +74,7 @@ describe("#onFormSubmit()", () => {
     ).toHaveBeenCalledWith("EXAMPLE_SHEET_NAME");
   });
 
-  it("should find the region of the sheet where the data was inserted", () => {
+  it("should get the range for the row above where the form data was submitted", () => {
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
@@ -101,5 +101,32 @@ describe("#onFormSubmit()", () => {
       previousRow,
       formIdColumn
     );
+  });
+
+  it("should get the value of the form ID for the previous form data entry", () => {
+    (
+      MockSpreadsheetApp.mockActiveSpreadsheet
+        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
+    ).mockImplementationOnce(() => {
+      return MockSpreadsheetApp.mockActiveSheet;
+    });
+
+    (
+      MockSpreadsheetApp.mockActiveSheet
+        .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
+    ).mockImplementationOnce(() => {
+      return MockSpreadsheetApp.mockPreviousRowRange;
+    });
+
+    const mockEvent = {
+      sample: "event",
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    onFormSubmit(mockEvent);
+
+    expect(MockSpreadsheetApp.mockPreviousRowRange.getValue).toHaveBeenCalled();
   });
 });

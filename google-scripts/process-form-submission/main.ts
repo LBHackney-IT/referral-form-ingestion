@@ -16,11 +16,12 @@ export function onFormSubmit(
   const IdColumnPosition = 1;
   var currentFormDataRange = event.range;
   var previousRowPosition = currentFormDataRange.getRow() - 1;
-  // console.log(activeSheet);
-  activeSheet?.getRange(previousRowPosition, IdColumnPosition);
-  // var previousRowId = activeSheet
-  //   ?.getRange(previousRowPosition, IdColumnPosition)
-  //   .getValue();
+  var previousRowRange = activeSheet?.getRange(
+    previousRowPosition,
+    IdColumnPosition
+  );
+
+  var previousFormDataId = previousRowRange?.getValue();
   //   var currentFormId = previousRowId + 1;
 
   //   activeSheet
