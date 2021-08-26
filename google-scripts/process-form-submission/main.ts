@@ -5,9 +5,23 @@ export function onFormSubmit(
   var formData = JSON.stringify(event.namedValues);
 
   try {
-    var activeSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
     );
+    setUniqueIdOnSubmission(sheet);
+  } catch (e) {
+    Logger.log(
+      formData,
+      {
+        event,
+      },
+      e
+    );
+  }
+
+  function setUniqueIdOnSubmission(
+    activeSheet: GoogleAppsScript.Spreadsheet.Sheet | null
+  ): number {
     if (activeSheet === undefined || activeSheet === null) {
       throw new Error("Sheet by name method returned null or undefined");
     } else {
@@ -19,7 +33,7 @@ export function onFormSubmit(
         IdColumnPosition
       );
 
-      var previousFormDataId = previousRowRange.getValue();
+      var previousFormDataId: number = previousRowRange.getValue();
       var currentFormId = previousFormDataId + 1;
 
       var currentFormIdCell = activeSheet.getRange(
@@ -27,14 +41,7 @@ export function onFormSubmit(
         IdColumnPosition
       );
       currentFormIdCell.setValue(currentFormId);
+      return currentFormId;
     }
-  } catch (e) {
-    Logger.log(
-      formData,
-      {
-        event,
-      },
-      e
-    );
   }
 }
