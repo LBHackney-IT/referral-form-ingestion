@@ -46,6 +46,9 @@ describe("#onFormSubmit()", () => {
       return null;
     });
 
+    // Explicitly setting the mock to return null above
+    // as this would always return undefined if the mock is not set up
+
     const sheetNotFoundError = new Error(
       "Sheet by name method returned null or undefined"
     );
