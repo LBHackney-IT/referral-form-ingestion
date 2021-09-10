@@ -1,4 +1,4 @@
-import { MockSpreadsheetApp } from "../google_mocks";
+import { MockSpreadsheetApp } from "../__mocks__/google_mocks";
 import { onFormSubmit } from "../main";
 
 describe("#onFormSubmit()", () => {
