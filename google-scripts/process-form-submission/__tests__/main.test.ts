@@ -1,4 +1,7 @@
-import { MockSpreadsheetApp } from "../__mocks__/google_mocks";
+import {
+  MockPropertiesService,
+  MockSpreadsheetApp,
+} from "../__mocks__/google_mocks";
 import { onFormSubmit } from "../main";
 
 describe("#onFormSubmit()", () => {
@@ -15,6 +18,9 @@ describe("#onFormSubmit()", () => {
     global.UrlFetchApp = {
       fetch: jest.fn(),
     } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
+
+    global.PropertiesService =
+      new MockPropertiesService() as unknown as GoogleAppsScript.Properties.PropertiesService;
   });
 
   it("should get the active sheet for storing the MASH referrals", () => {
@@ -23,6 +29,16 @@ describe("#onFormSubmit()", () => {
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
     ).mockImplementation(() => {
       return MockSpreadsheetApp.mockActiveSheet;
+    });
+
+    (
+      MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
+    ).mockImplementation((a) => {
+      if (a === "MASH_SHEET_NAME") {
+        return "EXAMPLE_SHEET_NAME";
+      } else {
+        return "";
+      }
     });
 
     const mockEvent = {
@@ -106,9 +122,18 @@ describe("#onFormSubmit()", () => {
       return MockSpreadsheetApp.mockActiveSheet;
     });
 
+    (
+      MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
+    ).mockImplementation((a) => {
+      if (a === "UNIQUE_ID_COLUMN_NO") {
+        return "1";
+      } else {
+        return "";
+      }
+    });
+
     const currentRow = 7;
     const previousRow = 6;
-    const setFormIdColumn = 1;
 
     const mockEvent = {
       sample: "event",
@@ -123,7 +148,7 @@ describe("#onFormSubmit()", () => {
 
     expect(MockSpreadsheetApp.mockActiveSheet.getRange).toHaveBeenCalledWith(
       previousRow,
-      setFormIdColumn
+      1
     );
   });
 
@@ -195,6 +220,18 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should send the form data with its ID to AWS for further processing", () => {
+    (
+      MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
+    ).mockImplementation((a) => {
+      if (a === "REFFERALS_BUCKET_URL") {
+        return "EXAMPLE_ENDPOINT";
+      } else if (a === "REFFERALS_BUCKET_API_KEY") {
+        return "EXAMPLE_API_KEY";
+      } else {
+        return "";
+      }
+    });
+
     const mockFormSubmission = {
       "First Name": ["Hello"],
       "Last Name": ["World"],

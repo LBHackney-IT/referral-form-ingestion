@@ -1,11 +1,26 @@
-const REFERRALS_SHEET_NAME = "EXAMPLE_SHEET_NAME";
-const S3_ENDPOINT_API = "EXAMPLE_ENDPOINT";
-const S3_ENDPOINT_API_KEY = "EXAMPLE_API_KEY";
-const FORM_SUBMISSION_ID_COLUMN_POSITION = 1;
+// const REFERRALS_SHEET_NAME = "EXAMPLE_SHEET_NAME";
+// const S3_ENDPOINT_API = "EXAMPLE_ENDPOINT";
+// const S3_ENDPOINT_API_KEY = "EXAMPLE_API_KEY";
+// const FORM_SUBMISSION_ID_COLUMN_POSITION = 1;
 
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
+  const REFERRALS_SHEET_NAME =
+    PropertiesService.getScriptProperties().getProperty("MASH_SHEET_NAME");
+
+  const S3_ENDPOINT_API = PropertiesService.getScriptProperties().getProperty(
+    "REFFERALS_BUCKET_URL"
+  );
+  const S3_ENDPOINT_API_KEY =
+    PropertiesService.getScriptProperties().getProperty(
+      "REFFERALS_BUCKET_API_KEY"
+    );
+
+  const FORM_SUBMISSION_ID_COLUMN_POSITION = Number(
+    PropertiesService.getScriptProperties().getProperty("UNIQUE_ID_COLUMN_NO")
+  );
+
   var formData = event.namedValues;
   try {
     var referralsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
