@@ -12,15 +12,15 @@ describe("#onFormSubmit()", () => {
       log: jest.fn(),
     } as unknown as GoogleAppsScript.Base.Logger;
 
+    global.PropertiesService =
+      new MockPropertiesService() as unknown as GoogleAppsScript.Properties.PropertiesService;
+
     global.SpreadsheetApp =
       new MockSpreadsheetApp() as unknown as GoogleAppsScript.Spreadsheet.SpreadsheetApp;
 
     global.UrlFetchApp = {
       fetch: jest.fn(),
     } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
-
-    global.PropertiesService =
-      new MockPropertiesService() as unknown as GoogleAppsScript.Properties.PropertiesService;
   });
 
   it("should get the active sheet for storing the MASH referrals", () => {
@@ -56,8 +56,10 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should return an error if the active sheet is not found", () => {
-    // Arrange: Set up mocks and their return values
-    // Explicitly setting the mock to return null, otherwise it will return undefined
+    /* 
+    Arrange: Set up mocks and their return values:
+    Explicitly setting the mock to return null, otherwise it will return undefined
+    */
 
     (
       MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName as jest.Mock<null>
@@ -87,10 +89,12 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should log the form data, event & error message when an error occurs", () => {
-    // Arrange: Set up mocks and their return values
-    // When not explicitly setup, the mocks will return undefined
-
-    // Arrange: Form submission event and error message
+    /* 
+    Arrange: Set up mocks and their return values:
+    When not explicitly set, the mocks will return undefined
+    --------------------------------------------------------
+    Arrange: Form submission event and error message
+    */
 
     const sheetNotFoundError = new Error(
       "Sheet by name method returned null or undefined"

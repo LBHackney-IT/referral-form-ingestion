@@ -24,9 +24,10 @@ export function onFormSubmit(
     );
     var currentUniqueId = setUniqueIdOnSubmission(referralsSheet);
 
-    // Update object to contain its ID
+    // Update the form submission object to contain its unique ID
     formData.FormSubmissionId = [`${currentUniqueId}`];
 
+    // Send updated form submission object to AWS
     sendDataToS3();
   } catch (e) {
     Logger.log(
