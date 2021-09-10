@@ -24,6 +24,7 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should get the active sheet for storing the MASH referrals", () => {
+    // Arrange: Set up mocks and their return values
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
@@ -34,13 +35,10 @@ describe("#onFormSubmit()", () => {
     (
       MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
     ).mockImplementation((a) => {
-      if (a === "MASH_SHEET_NAME") {
-        return "EXAMPLE_SHEET_NAME";
-      } else {
-        return "";
-      }
+      return a === "MASH_SHEET_NAME" ? "EXAMPLE_SHEET_NAME" : "";
     });
 
+    // Arrange: Form submission event
     const mockEvent = {
       sample: "event",
       range: {
@@ -48,23 +46,26 @@ describe("#onFormSubmit()", () => {
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
+    // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
+    // Assertion: Gets the active sheet
     expect(
       MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName
     ).toHaveBeenCalledWith("EXAMPLE_SHEET_NAME");
   });
 
   it("should return an error if the active sheet is not found", () => {
+    // Arrange: Set up mocks and their return values
+    // Explicitly setting the mock to return null, otherwise it will return undefined
+
     (
       MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName as jest.Mock<null>
     ).mockImplementation(() => {
       return null;
     });
 
-    // Explicitly setting the mock to return null above
-    // as this would always return undefined if the mock is not set up
-
+    // Arrange: Form submission event and error message
     const sheetNotFoundError = new Error(
       "Sheet by name method returned null or undefined"
     );
@@ -77,13 +78,20 @@ describe("#onFormSubmit()", () => {
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     try {
+      // Act: Trigger event when form is submitted
       onFormSubmit(mockEvent);
     } catch (e) {
+      // Assertion: Logs error message if the sheet is null
       expect(e).toEqual(sheetNotFoundError);
     }
   });
 
   it("should log the form data, event & error message when an error occurs", () => {
+    // Arrange: Set up mocks and their return values
+    // When not explicitly setup, the mocks will return undefined
+
+    // Arrange: Form submission event and error message
+
     const sheetNotFoundError = new Error(
       "Sheet by name method returned null or undefined"
     );
@@ -101,10 +109,12 @@ describe("#onFormSubmit()", () => {
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
+    // Act: Trigger event when form is submitted
     try {
       onFormSubmit(mockEvent);
     } catch (e) {}
 
+    // Assertion: Logs error message if the sheet is undefined
     expect(global.Logger.log).toHaveBeenCalledWith(
       JSON.stringify(mockEvent.namedValues),
       {
@@ -115,6 +125,7 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should get the range for the row above where the form data was submitted", () => {
+    // Arrange: Set up mocks and their return values
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
@@ -125,34 +136,35 @@ describe("#onFormSubmit()", () => {
     (
       MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
     ).mockImplementation((a) => {
-      if (a === "UNIQUE_ID_COLUMN_NO") {
-        return "1";
-      } else {
-        return "";
-      }
+      return a === "UNIQUE_ID_COLUMN_NO" ? `${idColumnIndex}` : "";
     });
 
-    const currentRow = 7;
-    const previousRow = 6;
+    // Arrange: Form submission event and spreadsheet cells of interest
+    const currentRowIndex = 7;
+    const previousRowIndex = 6;
+    const idColumnIndex = 1;
 
     const mockEvent = {
       sample: "event",
       range: {
         getRow() {
-          return currentRow;
+          return currentRowIndex;
         },
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
+    // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
+    // Assertion: Finds the ID cell of the previous form submission in the sheet
     expect(MockSpreadsheetApp.mockActiveSheet.getRange).toHaveBeenCalledWith(
-      previousRow,
+      previousRowIndex,
       1
     );
   });
 
   it("should get the value of the form ID for the previous form data entry", () => {
+    // Arrange: Set up mocks and their return values
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
@@ -167,6 +179,7 @@ describe("#onFormSubmit()", () => {
       return MockSpreadsheetApp.mockActiveRange;
     });
 
+    // Arrange: Form submission event
     const mockEvent = {
       sample: "event",
       range: {
@@ -174,24 +187,15 @@ describe("#onFormSubmit()", () => {
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
+    // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
+    // Assertion: Retrieves the value of the previous row's ID
     expect(MockSpreadsheetApp.mockActiveRange.getValue).toHaveBeenCalled();
   });
 
   it("should set a next value as the ID for the current form data entry", () => {
-    const currentRow = 11;
-    const previousFormId = 99;
-
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {
-          return currentRow;
-        },
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
+    // Arrange: Set up mocks and their return values
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
@@ -212,14 +216,30 @@ describe("#onFormSubmit()", () => {
       return previousFormId;
     });
 
+    // Arrange: Form submission event and spreadsheet cells of interest
+    const currentRow = 11;
+    const previousFormId = 99;
+
+    const mockEvent = {
+      sample: "event",
+      range: {
+        getRow() {
+          return currentRow;
+        },
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
+    // Assertion: Generated ID for the form data is inserted into the spreadsheet
     expect(MockSpreadsheetApp.mockActiveRange.setValue).toHaveBeenCalledWith(
       100
     );
   });
 
   it("should send the form data with its ID to AWS for further processing", () => {
+    // Arrange: Set up mocks and their return values
     (
       MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
     ).mockImplementation((a) => {
@@ -231,21 +251,6 @@ describe("#onFormSubmit()", () => {
         return "";
       }
     });
-
-    const mockFormSubmission = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const previousFormId = 99;
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormSubmission,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
@@ -274,7 +279,21 @@ describe("#onFormSubmit()", () => {
       return MockSpreadsheetApp.mockActiveRange;
     });
 
-    onFormSubmit(mockEvent);
+    // Arrange: Form submission event, HTTP request options and updated form data with generated ID
+    const previousFormId = 99;
+
+    const mockFormSubmission = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+
+    const mockEvent = {
+      sample: "event",
+      namedValues: mockFormSubmission,
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     var formDataWithId = mockEvent.namedValues;
     formDataWithId.FormSubmissionId = ["100"];
@@ -286,6 +305,10 @@ describe("#onFormSubmit()", () => {
       payload: JSON.stringify(formDataWithId),
     };
 
+    // Act: Trigger event when form is submitted
+    onFormSubmit(mockEvent);
+
+    // Assertion: Form submission data including generated unique ID sent to AWS
     expect(global.UrlFetchApp.fetch).toHaveBeenCalledWith(
       `EXAMPLE_ENDPOINT/form-submissions/100`,
       options

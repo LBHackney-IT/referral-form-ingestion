@@ -1,8 +1,3 @@
-// const REFERRALS_SHEET_NAME = "EXAMPLE_SHEET_NAME";
-// const S3_ENDPOINT_API = "EXAMPLE_ENDPOINT";
-// const S3_ENDPOINT_API_KEY = "EXAMPLE_API_KEY";
-// const FORM_SUBMISSION_ID_COLUMN_POSITION = 1;
-
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
@@ -22,6 +17,7 @@ export function onFormSubmit(
   );
 
   var formData = event.namedValues;
+
   try {
     var referralsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
