@@ -6,8 +6,11 @@ import { onFormSubmit } from "../main";
 
 describe("#onFormSubmit()", () => {
 
-  let testProperties: Map<string, string>;
+  let mockFormData:{[key:string]:string[]};
 
+  let mockEvent:GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+  let testProperties: Map<string, string>;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -18,6 +21,18 @@ describe("#onFormSubmit()", () => {
       ["UNIQUE_ID_COLUMN_NO", "1"],
       ["REFFERALS_BUCKET_API_KEY", "EXAMPLE_API_KEY"]
     ]);
+
+    mockFormData = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+  
+    mockEvent = {
+      namedValues: mockFormData,
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     global.Logger = {
       log: jest.fn(),
@@ -46,20 +61,6 @@ describe("#onFormSubmit()", () => {
   it("should raise an error if sheet name property is empty", () => {
     testProperties.set("MASH_SHEET_NAME", "")
 
-    // Arrange: Form submission event
-    const mockFormData = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormData,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
@@ -71,20 +72,6 @@ describe("#onFormSubmit()", () => {
 
   it("should raise an error if REFFERALS_BUCKET_URL property is empty", () => {
     testProperties.set("REFFERALS_BUCKET_URL", "")
-
-    // Arrange: Form submission event
-    const mockFormData = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormData,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
@@ -98,20 +85,6 @@ describe("#onFormSubmit()", () => {
   it("should raise an error if UNIQUE_ID_COLUMN_NO property is empty", () => {
     testProperties.set("UNIQUE_ID_COLUMN_NO", "")
 
-    // Arrange: Form submission event
-    const mockFormData = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormData,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
@@ -123,20 +96,6 @@ describe("#onFormSubmit()", () => {
 
   it("should raise an error if REFFERALS_BUCKET_API_KEY property is empty", () => {
     testProperties.set("REFFERALS_BUCKET_API_KEY", "")
-
-    // Arrange: Form submission event
-    const mockFormData = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormData,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
@@ -155,14 +114,6 @@ describe("#onFormSubmit()", () => {
     ).mockImplementation(() => {
       return MockSpreadsheetApp.mockActiveSheet;
     });
-
-    // Arrange: Form submission event
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
@@ -185,14 +136,6 @@ describe("#onFormSubmit()", () => {
       return null;
     });
 
-    // Arrange: Form submission event and error message
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
@@ -209,18 +152,6 @@ describe("#onFormSubmit()", () => {
     --------------------------------------------------------
     Arrange: Form submission event and error message
     */
-    const mockFormSubmission = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormSubmission,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     // Act: Trigger event when form is submitted
     try {
@@ -249,10 +180,8 @@ describe("#onFormSubmit()", () => {
     // Arrange: Form submission event and spreadsheet cells of interest
     const currentRowIndex = 7;
     const previousRowIndex = 6;
-    const idColumnIndex = 1;
 
-    const mockEvent = {
-      sample: "event",
+    mockEvent = {
       range: {
         getRow() {
           return currentRowIndex;
@@ -285,14 +214,6 @@ describe("#onFormSubmit()", () => {
     ).mockImplementation(() => {
       return MockSpreadsheetApp.mockActiveRange;
     });
-
-    // Arrange: Form submission event
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
@@ -327,8 +248,7 @@ describe("#onFormSubmit()", () => {
     const currentRow = 11;
     const previousFormId = 99;
 
-    const mockEvent = {
-      sample: "event",
+    mockEvent = {
       range: {
         getRow() {
           return currentRow;
@@ -376,19 +296,6 @@ describe("#onFormSubmit()", () => {
 
     // Arrange: Form submission event, HTTP request options and updated form data with generated ID
     const previousFormId = 99;
-
-    const mockFormSubmission = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormSubmission,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     var formDataWithId = mockEvent.namedValues;
     formDataWithId.FormSubmissionId = ["100"];
