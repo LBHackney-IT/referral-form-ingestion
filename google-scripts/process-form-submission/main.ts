@@ -11,10 +11,8 @@ export function onFormSubmit(
     PropertiesService.getScriptProperties().getProperty(
       "REFFERALS_BUCKET_API_KEY"
     );
-
-  const FORM_SUBMISSION_ID_COLUMN_POSITION = Number(
-    PropertiesService.getScriptProperties().getProperty("UNIQUE_ID_COLUMN_NO")
-  );
+    
+  const FORM_SUBMISSION_ID_COLUMN_POSITION = PropertiesService.getScriptProperties().getProperty("UNIQUE_ID_COLUMN_NO");
 
   var formData = event.namedValues;
 
@@ -24,6 +22,12 @@ export function onFormSubmit(
     }
     if (!S3_ENDPOINT_API) {
       throw new Error("Property REFFERALS_BUCKET_URL could not be found")
+    }
+    if (!FORM_SUBMISSION_ID_COLUMN_POSITION) {
+      throw new Error("Property UNIQUE_ID_COLUMN_NO could not be found")
+    }
+    if (!S3_ENDPOINT_API_KEY) {
+      throw new Error("Property REFFERALS_BUCKET_API_KEY could not be found")
     }
     var referralsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
@@ -69,7 +73,7 @@ export function onFormSubmit(
       var previousSubmissionRowPosition = currentFormDataRange.getRow() - 1;
       var previousSubmissionIdCell = activeSheet.getRange(
         previousSubmissionRowPosition,
-        FORM_SUBMISSION_ID_COLUMN_POSITION
+        Number(FORM_SUBMISSION_ID_COLUMN_POSITION)
       );
 
       var previousSubmissionUniqueId: number =
@@ -78,7 +82,7 @@ export function onFormSubmit(
 
       var currentFormIdCell = activeSheet.getRange(
         currentFormDataRange.getRow(),
-        FORM_SUBMISSION_ID_COLUMN_POSITION
+        Number(FORM_SUBMISSION_ID_COLUMN_POSITION)
       );
       currentFormIdCell.setValue(currentSubmissionUniqueId);
       return currentSubmissionUniqueId;

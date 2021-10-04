@@ -14,7 +14,9 @@ describe("#onFormSubmit()", () => {
 
     testProperties = new Map([
       ["MASH_SHEET_NAME", "EXAMPLE_SHEET_NAME"],
-      ["REFFERALS_BUCKET_URL", "EXAMPLE_S3_URL"]
+      ["REFFERALS_BUCKET_URL", "EXAMPLE_S3_URL"],
+      ["UNIQUE_ID_COLUMN_NO", "1"],
+      ["REFFERALS_BUCKET_API_KEY", "EXAMPLE_API_KEY"]
     ]);
 
     global.Logger = {
@@ -91,6 +93,58 @@ describe("#onFormSubmit()", () => {
     expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
       event: mockEvent,
     },"Property REFFERALS_BUCKET_URL could not be found");
+  });
+
+  it("should raise an error if UNIQUE_ID_COLUMN_NO property is empty", () => {
+    testProperties.set("UNIQUE_ID_COLUMN_NO", "")
+
+    // Arrange: Form submission event
+    const mockFormData = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+
+    const mockEvent = {
+      sample: "event",
+      namedValues: mockFormData,
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    // Act: Trigger event when form is submitted
+    onFormSubmit(mockEvent);
+
+    // Assertion: Logs error message if the sheet is null
+    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
+      event: mockEvent,
+    },"Property UNIQUE_ID_COLUMN_NO could not be found");
+  });
+
+  it("should raise an error if REFFERALS_BUCKET_API_KEY property is empty", () => {
+    testProperties.set("REFFERALS_BUCKET_API_KEY", "")
+
+    // Arrange: Form submission event
+    const mockFormData = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+
+    const mockEvent = {
+      sample: "event",
+      namedValues: mockFormData,
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    // Act: Trigger event when form is submitted
+    onFormSubmit(mockEvent);
+
+    // Assertion: Logs error message if the sheet is null
+    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
+      event: mockEvent,
+    },"Property REFFERALS_BUCKET_API_KEY could not be found");
   });
 
   it("should get the active sheet for storing the MASH referrals", () => {
@@ -190,12 +244,6 @@ describe("#onFormSubmit()", () => {
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
     ).mockImplementation(() => {
       return MockSpreadsheetApp.mockActiveSheet;
-    });
-
-    (
-      MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
-    ).mockImplementation((a) => {
-      return a === "UNIQUE_ID_COLUMN_NO" ? `${idColumnIndex}` : "NOT_NULL";
     });
 
     // Arrange: Form submission event and spreadsheet cells of interest
