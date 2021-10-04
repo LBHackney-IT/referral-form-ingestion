@@ -1,4 +1,4 @@
-import { getProperties } from "../getProperties";
+import getProperties from "../getProperties";
 import { MockPropertiesService } from "../__mocks__/google_mocks";
 
 describe.only("#getProperties", () => {

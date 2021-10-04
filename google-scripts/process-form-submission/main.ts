@@ -1,4 +1,4 @@
-import { getProperties } from "./getProperties";
+import getProperties from "./getProperties";
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {

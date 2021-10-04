@@ -1,4 +1,4 @@
-export function getProperties() {
+export default function getProperties() {
   const REFERRALS_SHEET_NAME =
     PropertiesService.getScriptProperties().getProperty("MASH_SHEET_NAME");
 

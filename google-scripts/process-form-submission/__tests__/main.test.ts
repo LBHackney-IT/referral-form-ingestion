@@ -19,7 +19,7 @@ describe("#onFormSubmit()", () => {
     mockEvent = {
       namedValues: mockFormData,
       range: {
-        getRow() {},
+        getRow() { },
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
@@ -34,6 +34,16 @@ describe("#onFormSubmit()", () => {
       fetch: jest.fn(),
     } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
 
+    jest.mock("../getProperties", () => {
+      return {
+        default: {
+          REFERRALS_SHEET_NAME: "EXAMPLE_SHEET_NAME",
+          S3_ENDPOINT_API: "TEST1",
+          S3_ENDPOINT_API_KEY: "TEST2",
+          FORM_SUBMISSION_ID_COLUMN_POSITION: "TEST3"
+        }
+      };
+    })
     // mock getProperties 
     // ^ one test where we we mock an error and expect Logger to be called
   });
@@ -92,7 +102,7 @@ describe("#onFormSubmit()", () => {
     // Act: Trigger event when form is submitted
     try {
       onFormSubmit(mockEvent);
-    } catch (e) {}
+    } catch (e) { }
 
     // Assertion: Logs error message if the sheet is undefined
     expect(global.Logger.log).toHaveBeenCalledWith(
