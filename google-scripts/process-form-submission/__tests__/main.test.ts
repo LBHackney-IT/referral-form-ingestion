@@ -23,6 +23,34 @@ describe("#onFormSubmit()", () => {
     } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
   });
 
+  it("should raise an error if sheet name property is empty", () => {
+    (
+      MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
+    ).mockReturnValue("");
+
+    // Arrange: Form submission event
+    const mockFormData = {
+      "First Name": ["Hello"],
+      "Last Name": ["World"],
+    };
+
+    const mockEvent = {
+      sample: "event",
+      namedValues: mockFormData,
+      range: {
+        getRow() {},
+      } as unknown as GoogleAppsScript.Spreadsheet.Range,
+    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
+    // Act: Trigger event when form is submitted
+    onFormSubmit(mockEvent);
+
+    // Assertion: Logs error message if the sheet is null
+    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
+      event: mockEvent,
+    },"Property MASH_SHEET_NAME could not be found");
+  });
+
   it("should get the active sheet for storing the MASH referrals", () => {
     // Arrange: Set up mocks and their return values
     (
@@ -68,10 +96,6 @@ describe("#onFormSubmit()", () => {
     });
 
     // Arrange: Form submission event and error message
-    const sheetNotFoundError = new Error(
-      "Sheet by name method returned null or undefined"
-    );
-
     const mockEvent = {
       sample: "event",
       range: {
@@ -79,13 +103,13 @@ describe("#onFormSubmit()", () => {
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
-    try {
-      // Act: Trigger event when form is submitted
-      onFormSubmit(mockEvent);
-    } catch (e) {
-      // Assertion: Logs error message if the sheet is null
-      expect(e).toEqual(sheetNotFoundError);
-    }
+    // Act: Trigger event when form is submitted
+    onFormSubmit(mockEvent);
+
+    // Assertion: Logs error message if the sheet is null
+    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockEvent.namedValues), {
+      event: mockEvent,
+    }, "Sheet by name method returned null or undefined");
   });
 
   it("should log the form data, event & error message when an error occurs", () => {
@@ -95,11 +119,6 @@ describe("#onFormSubmit()", () => {
     --------------------------------------------------------
     Arrange: Form submission event and error message
     */
-
-    const sheetNotFoundError = new Error(
-      "Sheet by name method returned null or undefined"
-    );
-
     const mockFormSubmission = {
       "First Name": ["Hello"],
       "Last Name": ["World"],
@@ -124,7 +143,7 @@ describe("#onFormSubmit()", () => {
       {
         event: mockEvent,
       },
-      sheetNotFoundError
+      "Sheet by name method returned null or undefined"
     );
   });
 
@@ -140,7 +159,7 @@ describe("#onFormSubmit()", () => {
     (
       MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
     ).mockImplementation((a) => {
-      return a === "UNIQUE_ID_COLUMN_NO" ? `${idColumnIndex}` : "";
+      return a === "UNIQUE_ID_COLUMN_NO" ? `${idColumnIndex}` : "NOT_NULL";
     });
 
     // Arrange: Form submission event and spreadsheet cells of interest
@@ -252,7 +271,7 @@ describe("#onFormSubmit()", () => {
       } else if (a === "REFFERALS_BUCKET_API_KEY") {
         return "EXAMPLE_API_KEY";
       } else {
-        return "";
+        return "NOT_NULL";
       }
     });
 

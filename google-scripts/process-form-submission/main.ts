@@ -19,6 +19,9 @@ export function onFormSubmit(
   var formData = event.namedValues;
 
   try {
+    if (REFERRALS_SHEET_NAME === ""){
+      throw new Error("Property MASH_SHEET_NAME could not be found");
+    }
     var referralsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
     );
@@ -29,13 +32,13 @@ export function onFormSubmit(
 
     // Send updated form submission object to AWS
     sendDataToS3();
-  } catch (e) {
+  } catch (e:any) {
     Logger.log(
       JSON.stringify(formData),
       {
         event,
       },
-      e
+      e.message
     );
   }
 
