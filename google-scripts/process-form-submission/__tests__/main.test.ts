@@ -1,7 +1,15 @@
-import {
-  MockSpreadsheetApp,
-} from "../__mocks__/google_mocks";
+import { MockSpreadsheetApp } from "../__mocks__/google_mocks";
 import { onFormSubmit } from "../main";
+import { getProperties } from "../getProperties";
+
+jest.mock("../getProperties", () => ({
+  getProperties: () => ({
+    REFERRALS_SHEET_NAME: "EXAMPLE_SHEET_NAME",
+    S3_ENDPOINT_API: "EXAMPLE_S3_URL",
+    S3_ENDPOINT_API_KEY: "EXAMPLE_API_KEY",
+    FORM_SUBMISSION_ID_COLUMN_POSITION: "1",
+  })
+}));
 
 describe("#onFormSubmit()", () => {
   let mockFormData: { [key: string]: string[] };
@@ -19,7 +27,7 @@ describe("#onFormSubmit()", () => {
     mockEvent = {
       namedValues: mockFormData,
       range: {
-        getRow() { },
+        getRow() {},
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
@@ -33,20 +41,12 @@ describe("#onFormSubmit()", () => {
     global.UrlFetchApp = {
       fetch: jest.fn(),
     } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
-
-    jest.mock("../getProperties", () => {
-      return {
-        default: {
-          REFERRALS_SHEET_NAME: "EXAMPLE_SHEET_NAME",
-          S3_ENDPOINT_API: "TEST1",
-          S3_ENDPOINT_API_KEY: "TEST2",
-          FORM_SUBMISSION_ID_COLUMN_POSITION: "TEST3"
-        }
-      };
-    })
-    // mock getProperties 
-    // ^ one test where we we mock an error and expect Logger to be called
   });
+
+  // todo figure out how to make mock of getProperties throw an error
+  it('should log an error when getProperties throws an error', () => {
+    expect(5*5).toBe(1);
+  })
 
   it("should get the active sheet for storing the MASH referrals", () => {
     // Arrange: Set up mocks and their return values
@@ -102,7 +102,7 @@ describe("#onFormSubmit()", () => {
     // Act: Trigger event when form is submitted
     try {
       onFormSubmit(mockEvent);
-    } catch (e) { }
+    } catch (e) {}
 
     // Assertion: Logs error message if the sheet is undefined
     expect(global.Logger.log).toHaveBeenCalledWith(
