@@ -348,18 +348,6 @@ describe("#onFormSubmit()", () => {
   it("should send the form data with its ID to AWS for further processing", () => {
     // Arrange: Set up mocks and their return values
     (
-      MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
-    ).mockImplementation((a) => {
-      if (a === "REFFERALS_BUCKET_URL") {
-        return "EXAMPLE_ENDPOINT";
-      } else if (a === "REFFERALS_BUCKET_API_KEY") {
-        return "EXAMPLE_API_KEY";
-      } else {
-        return "NOT_NULL";
-      }
-    });
-
-    (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
     ).mockImplementation(() => {
@@ -417,7 +405,7 @@ describe("#onFormSubmit()", () => {
 
     // Assertion: Form submission data including generated unique ID sent to AWS
     expect(global.UrlFetchApp.fetch).toHaveBeenCalledWith(
-      `EXAMPLE_ENDPOINT/form-submissions/100`,
+      `EXAMPLE_S3_URL/form-submissions/100`,
       options
     );
   });
