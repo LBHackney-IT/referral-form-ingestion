@@ -5,10 +5,9 @@ import {
 import { onFormSubmit } from "../main";
 
 describe("#onFormSubmit()", () => {
+  let mockFormData: { [key: string]: string[] };
 
-  let mockFormData:{[key:string]:string[]};
-
-  let mockEvent:GoogleAppsScript.Events.SheetsOnFormSubmit;
+  let mockEvent: GoogleAppsScript.Events.SheetsOnFormSubmit;
 
   let testProperties: Map<string, string>;
 
@@ -19,14 +18,14 @@ describe("#onFormSubmit()", () => {
       ["MASH_SHEET_NAME", "EXAMPLE_SHEET_NAME"],
       ["REFFERALS_BUCKET_URL", "EXAMPLE_S3_URL"],
       ["UNIQUE_ID_COLUMN_NO", "1"],
-      ["REFFERALS_BUCKET_API_KEY", "EXAMPLE_API_KEY"]
+      ["REFFERALS_BUCKET_API_KEY", "EXAMPLE_API_KEY"],
     ]);
 
     mockFormData = {
       "First Name": ["Hello"],
       "Last Name": ["World"],
     };
-  
+
     mockEvent = {
       namedValues: mockFormData,
       range: {
@@ -51,7 +50,7 @@ describe("#onFormSubmit()", () => {
     (
       MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
     ).mockImplementation((a) => {
-      if(testProperties.has(a)) {
+      if (testProperties.has(a)) {
         return testProperties.get(a) as string;
       }
       return "";
@@ -59,51 +58,67 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should raise an error if sheet name property is empty", () => {
-    testProperties.set("MASH_SHEET_NAME", "")
+    testProperties.set("MASH_SHEET_NAME", "");
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
     // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
-      event: mockEvent,
-    },"Property MASH_SHEET_NAME could not be found");
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockFormData),
+      {
+        event: mockEvent,
+      },
+      "Property MASH_SHEET_NAME could not be found"
+    );
   });
 
   it("should raise an error if REFFERALS_BUCKET_URL property is empty", () => {
-    testProperties.set("REFFERALS_BUCKET_URL", "")
+    testProperties.set("REFFERALS_BUCKET_URL", "");
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
     // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
-      event: mockEvent,
-    },"Property REFFERALS_BUCKET_URL could not be found");
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockFormData),
+      {
+        event: mockEvent,
+      },
+      "Property REFFERALS_BUCKET_URL could not be found"
+    );
   });
 
   it("should raise an error if UNIQUE_ID_COLUMN_NO property is empty", () => {
-    testProperties.set("UNIQUE_ID_COLUMN_NO", "")
+    testProperties.set("UNIQUE_ID_COLUMN_NO", "");
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
     // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
-      event: mockEvent,
-    },"Property UNIQUE_ID_COLUMN_NO could not be found");
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockFormData),
+      {
+        event: mockEvent,
+      },
+      "Property UNIQUE_ID_COLUMN_NO could not be found"
+    );
   });
 
   it("should raise an error if REFFERALS_BUCKET_API_KEY property is empty", () => {
-    testProperties.set("REFFERALS_BUCKET_API_KEY", "")
+    testProperties.set("REFFERALS_BUCKET_API_KEY", "");
 
     // Act: Trigger event when form is submitted
     onFormSubmit(mockEvent);
 
     // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockFormData), {
-      event: mockEvent,
-    },"Property REFFERALS_BUCKET_API_KEY could not be found");
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockFormData),
+      {
+        event: mockEvent,
+      },
+      "Property REFFERALS_BUCKET_API_KEY could not be found"
+    );
   });
 
   it("should get the active sheet for storing the MASH referrals", () => {
@@ -140,9 +155,13 @@ describe("#onFormSubmit()", () => {
     onFormSubmit(mockEvent);
 
     // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockEvent.namedValues), {
-      event: mockEvent,
-    }, "Sheet by name method returned null or undefined");
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockEvent.namedValues),
+      {
+        event: mockEvent,
+      },
+      "Sheet by name method returned null or undefined"
+    );
   });
 
   it("should log the form data, event & error message when an error occurs", () => {
