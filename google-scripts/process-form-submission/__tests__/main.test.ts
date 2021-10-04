@@ -1,5 +1,4 @@
 import {
-  MockPropertiesService,
   MockSpreadsheetApp,
 } from "../__mocks__/google_mocks";
 import { onFormSubmit } from "../main";
@@ -9,17 +8,8 @@ describe("#onFormSubmit()", () => {
 
   let mockEvent: GoogleAppsScript.Events.SheetsOnFormSubmit;
 
-  let testProperties: Map<string, string>;
-
   beforeEach(() => {
     jest.resetAllMocks();
-
-    testProperties = new Map([
-      ["MASH_SHEET_NAME", "EXAMPLE_SHEET_NAME"],
-      ["REFFERALS_BUCKET_URL", "EXAMPLE_S3_URL"],
-      ["UNIQUE_ID_COLUMN_NO", "1"],
-      ["REFFERALS_BUCKET_API_KEY", "EXAMPLE_API_KEY"],
-    ]);
 
     mockFormData = {
       "First Name": ["Hello"],
@@ -37,9 +27,6 @@ describe("#onFormSubmit()", () => {
       log: jest.fn(),
     } as unknown as GoogleAppsScript.Base.Logger;
 
-    global.PropertiesService =
-      new MockPropertiesService() as unknown as GoogleAppsScript.Properties.PropertiesService;
-
     global.SpreadsheetApp =
       new MockSpreadsheetApp() as unknown as GoogleAppsScript.Spreadsheet.SpreadsheetApp;
 
@@ -47,78 +34,8 @@ describe("#onFormSubmit()", () => {
       fetch: jest.fn(),
     } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
 
-    (
-      MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
-    ).mockImplementation((a) => {
-      if (testProperties.has(a)) {
-        return testProperties.get(a) as string;
-      }
-      return "";
-    });
-  });
-
-  it("should raise an error if sheet name property is empty", () => {
-    testProperties.set("MASH_SHEET_NAME", "");
-
-    // Act: Trigger event when form is submitted
-    onFormSubmit(mockEvent);
-
-    // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify(mockFormData),
-      {
-        event: mockEvent,
-      },
-      "Property MASH_SHEET_NAME could not be found"
-    );
-  });
-
-  it("should raise an error if REFFERALS_BUCKET_URL property is empty", () => {
-    testProperties.set("REFFERALS_BUCKET_URL", "");
-
-    // Act: Trigger event when form is submitted
-    onFormSubmit(mockEvent);
-
-    // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify(mockFormData),
-      {
-        event: mockEvent,
-      },
-      "Property REFFERALS_BUCKET_URL could not be found"
-    );
-  });
-
-  it("should raise an error if UNIQUE_ID_COLUMN_NO property is empty", () => {
-    testProperties.set("UNIQUE_ID_COLUMN_NO", "");
-
-    // Act: Trigger event when form is submitted
-    onFormSubmit(mockEvent);
-
-    // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify(mockFormData),
-      {
-        event: mockEvent,
-      },
-      "Property UNIQUE_ID_COLUMN_NO could not be found"
-    );
-  });
-
-  it("should raise an error if REFFERALS_BUCKET_API_KEY property is empty", () => {
-    testProperties.set("REFFERALS_BUCKET_API_KEY", "");
-
-    // Act: Trigger event when form is submitted
-    onFormSubmit(mockEvent);
-
-    // Assertion: Logs error message if the sheet is null
-    expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify(mockFormData),
-      {
-        event: mockEvent,
-      },
-      "Property REFFERALS_BUCKET_API_KEY could not be found"
-    );
+    // mock getProperties 
+    // ^ one test where we we mock an error and expect Logger to be called
   });
 
   it("should get the active sheet for storing the MASH referrals", () => {
