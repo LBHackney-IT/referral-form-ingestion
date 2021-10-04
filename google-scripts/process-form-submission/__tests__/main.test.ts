@@ -5,8 +5,17 @@ import {
 import { onFormSubmit } from "../main";
 
 describe("#onFormSubmit()", () => {
+
+  let testProperties: Map<string, string>;
+
+
   beforeEach(() => {
     jest.resetAllMocks();
+
+    testProperties = new Map([
+      ["MASH_SHEET_NAME", "EXAMPLE_SHEET_NAME"],
+      ["REFFERALS_BUCKET_URL", "EXAMPLE_S3_URL"]
+    ]);
 
     global.Logger = {
       log: jest.fn(),
@@ -25,25 +34,15 @@ describe("#onFormSubmit()", () => {
     (
       MockPropertiesService.mockProperties.getProperty as jest.Mock<string>
     ).mockImplementation((a) => {
-      if(a === "MASH_SHEET_NAME") {
-        return "EXAMPLE_SHEET_NAME"
-      }
-      if (a === "REFFERALS_BUCKET_URL") {
-        return "EXAMPLE_S3_URL";
+      if(testProperties.has(a)) {
+        return testProperties.get(a) as string;
       }
       return "";
     });
   });
 
   it("should raise an error if sheet name property is empty", () => {
-    (
-      MockPropertiesService.mockProperties.getProperty as jest.Mock<string|null>
-    ).mockImplementation((a) => {
-      if(a === "MASH_SHEET_NAME") {
-        return "";
-      }
-      return "";
-    });
+    testProperties.set("MASH_SHEET_NAME", "")
 
     // Arrange: Form submission event
     const mockFormData = {
@@ -69,17 +68,7 @@ describe("#onFormSubmit()", () => {
   });
 
   it("should raise an error if REFFERALS_BUCKET_URL property is empty", () => {
-    (
-      MockPropertiesService.mockProperties.getProperty as jest.Mock<string | null>
-    ).mockImplementation((a) => {
-      if(a === "MASH_SHEET_NAME") {
-        return "EXAMPLE_SHEET_NAME";
-      }
-      if(a === "REFFERALS_BUCKET_URL") {
-        return ""
-      }
-      return "";
-    });
+    testProperties.set("REFFERALS_BUCKET_URL", "")
 
     // Arrange: Form submission event
     const mockFormData = {
