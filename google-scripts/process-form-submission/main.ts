@@ -4,7 +4,7 @@ import { setUniqueIdOnSubmission } from "./setUniqueIdOnSubmission";
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
-  var formData = event.namedValues;
+  const formData = event.namedValues;
 
   try {
     const {
@@ -14,7 +14,7 @@ export function onFormSubmit(
       FORM_SUBMISSION_ID_COLUMN_POSITION,
     } = getProperties();
 
-    var referralsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+    const referralsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
     );
 
@@ -36,7 +36,7 @@ export function onFormSubmit(
   }
 
   function sendDataToS3(apiUrl: string, apiKey: string, currentUniqueId: number) {
-    var options = {
+    const options = {
       method: "put",
       headers: { "X-API-KEY": apiKey },
       contentType: "application/json",
