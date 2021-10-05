@@ -5,16 +5,16 @@ describe.only("#getProperties", () => {
   let testProperties: Map<string, string | null>;
 
   const MASH_SHEET_NAME = "EXAMPLE_SHEET_NAME";
-  const REFFERALS_BUCKET_URL = "EXAMPLE_S3_URL";
+  const REFERRALS_BUCKET_URL = "EXAMPLE_S3_URL";
   const UNIQUE_ID_COLUMN_NO = "1";
-  const REFFERALS_BUCKET_API_KEY = "EXAMPLE_API_KEY";
+  const REFERRALS_BUCKET_API_KEY = "EXAMPLE_API_KEY";
 
   beforeEach(() => {
     testProperties = new Map([
       ["MASH_SHEET_NAME", MASH_SHEET_NAME],
-      ["REFFERALS_BUCKET_URL", REFFERALS_BUCKET_URL],
+      ["REFERRALS_BUCKET_URL", REFERRALS_BUCKET_URL],
       ["UNIQUE_ID_COLUMN_NO", UNIQUE_ID_COLUMN_NO],
-      ["REFFERALS_BUCKET_API_KEY", REFFERALS_BUCKET_API_KEY],
+      ["REFERRALS_BUCKET_API_KEY", REFERRALS_BUCKET_API_KEY],
     ]);
 
     (
@@ -34,8 +34,8 @@ describe.only("#getProperties", () => {
     expect(getProperties()).toEqual({
       FORM_SUBMISSION_ID_COLUMN_POSITION: UNIQUE_ID_COLUMN_NO,
       REFERRALS_SHEET_NAME: MASH_SHEET_NAME,
-      S3_ENDPOINT_API: REFFERALS_BUCKET_URL,
-      S3_ENDPOINT_API_KEY: REFFERALS_BUCKET_API_KEY,
+      S3_ENDPOINT_API: REFERRALS_BUCKET_URL,
+      S3_ENDPOINT_API_KEY: REFERRALS_BUCKET_API_KEY,
     });
   });
 
@@ -47,11 +47,11 @@ describe.only("#getProperties", () => {
     );
   });
 
-  it("should raise an error if REFFERALS_BUCKET_URL property is empty", () => {
-    testProperties.set("REFFERALS_BUCKET_URL", "");
+  it("should raise an error if REFERRALS_BUCKET_URL property is empty", () => {
+    testProperties.set("REFERRALS_BUCKET_URL", "");
 
     expect(getProperties).toThrow(
-      "Property REFFERALS_BUCKET_URL could not be found"
+      "Property REFERRALS_BUCKET_URL could not be found"
     );
   });
 
@@ -63,11 +63,11 @@ describe.only("#getProperties", () => {
     );
   });
 
-  it("should raise an error if REFFERALS_BUCKET_API_KEY property is empty", () => {
-    testProperties.set("REFFERALS_BUCKET_API_KEY", "");
+  it("should raise an error if REFERRALS_BUCKET_API_KEY property is empty", () => {
+    testProperties.set("REFERRALS_BUCKET_API_KEY", "");
 
     expect(getProperties).toThrow(
-      "Property REFFERALS_BUCKET_API_KEY could not be found"
+      "Property REFERRALS_BUCKET_API_KEY could not be found"
     );
   });
 
@@ -79,11 +79,11 @@ describe.only("#getProperties", () => {
     );
   });
 
-  it("should raise an error if REFFERALS_BUCKET_URL property is null", () => {
-    testProperties.set("REFFERALS_BUCKET_URL", null);
+  it("should raise an error if REFERRALS_BUCKET_URL property is null", () => {
+    testProperties.set("REFERRALS_BUCKET_URL", null);
 
     expect(getProperties).toThrow(
-      "Property REFFERALS_BUCKET_URL could not be found"
+      "Property REFERRALS_BUCKET_URL could not be found"
     );
   });
 
@@ -95,11 +95,11 @@ describe.only("#getProperties", () => {
     );
   });
 
-  it("should raise an error if REFFERALS_BUCKET_API_KEY property is null", () => {
-    testProperties.set("REFFERALS_BUCKET_API_KEY", null);
+  it("should raise an error if REFERRALS_BUCKET_API_KEY property is null", () => {
+    testProperties.set("REFERRALS_BUCKET_API_KEY", null);
 
     expect(getProperties).toThrow(
-      "Property REFFERALS_BUCKET_API_KEY could not be found"
+      "Property REFERRALS_BUCKET_API_KEY could not be found"
     );
   });
 });
