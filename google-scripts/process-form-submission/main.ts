@@ -1,4 +1,6 @@
-import {getProperties} from "./getProperties";
+import { getProperties } from "./getProperties";
+import { setUniqueIdOnSubmission } from "./setUniqueIdOnSubmission";
+
 export function onFormSubmit(
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ) {
@@ -11,19 +13,18 @@ export function onFormSubmit(
       S3_ENDPOINT_API_KEY,
       FORM_SUBMISSION_ID_COLUMN_POSITION,
     } = getProperties();
+
     var referralsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
       `${REFERRALS_SHEET_NAME}`
     );
-    var currentUniqueId = setUniqueIdOnSubmission(
-      referralsSheet,
-      FORM_SUBMISSION_ID_COLUMN_POSITION
-    );
+
+    const currentUniqueId = setUniqueIdOnSubmission(referralsSheet, FORM_SUBMISSION_ID_COLUMN_POSITION, event)
 
     // Update the form submission object to contain its unique ID
-    formData.FormSubmissionId = [`${currentUniqueId}`];
+    formData.FormSubmissionId = [currentUniqueId.toString()];
 
     // Send updated form submission object to AWS
-    sendDataToS3(S3_ENDPOINT_API, S3_ENDPOINT_API_KEY);
+    sendDataToS3(S3_ENDPOINT_API, S3_ENDPOINT_API_KEY, currentUniqueId);
   } catch (e: any) {
     Logger.log(
       JSON.stringify(formData),
@@ -34,7 +35,7 @@ export function onFormSubmit(
     );
   }
 
-  function sendDataToS3(apiUrl: string, apiKey: string) {
+  function sendDataToS3(apiUrl: string, apiKey: string, currentUniqueId: number) {
     var options = {
       method: "put",
       headers: { "X-API-KEY": apiKey },
@@ -43,32 +44,5 @@ export function onFormSubmit(
     } as GoogleAppsScript.URL_Fetch.URLFetchRequestOptions;
 
     UrlFetchApp.fetch(`${apiUrl}/form-submissions/${currentUniqueId}`, options);
-  }
-
-  function setUniqueIdOnSubmission(
-    activeSheet: GoogleAppsScript.Spreadsheet.Sheet | null | undefined,
-    idColumn: string
-  ): number {
-    if (activeSheet === undefined || activeSheet === null) {
-      throw new Error("Sheet by name method returned null or undefined");
-    } else {
-      var currentFormDataRange = event.range;
-      var previousSubmissionRowPosition = currentFormDataRange.getRow() - 1;
-      var previousSubmissionIdCell = activeSheet.getRange(
-        previousSubmissionRowPosition,
-        Number(idColumn)
-      );
-
-      var previousSubmissionUniqueId: number =
-        previousSubmissionIdCell.getValue();
-      var currentSubmissionUniqueId = previousSubmissionUniqueId + 1;
-
-      var currentFormIdCell = activeSheet.getRange(
-        currentFormDataRange.getRow(),
-        Number(idColumn)
-      );
-      currentFormIdCell.setValue(currentSubmissionUniqueId);
-      return currentSubmissionUniqueId;
-    }
   }
 }
