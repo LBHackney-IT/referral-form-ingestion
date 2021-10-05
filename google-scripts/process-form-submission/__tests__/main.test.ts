@@ -7,24 +7,21 @@ jest.mock("../getProperties")
 jest.mock("../setUniqueIdOnSubmission")
 
 describe("#onFormSubmit()", () => {
-  let mockFormData: { [key: string]: string[] };
+  
+  const mockFormData = {
+    "First Name": ["Hello"],
+    "Last Name": ["World"],
+  }
 
-  let mockEvent: GoogleAppsScript.Events.SheetsOnFormSubmit;
+  const mockEvent = {
+    namedValues: mockFormData,
+    range: {
+      getRow() { },
+    } as unknown as GoogleAppsScript.Spreadsheet.Range,
+  } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
   beforeEach(() => {
     jest.resetAllMocks();
-
-    mockFormData = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    mockEvent = {
-      namedValues: mockFormData,
-      range: {
-        getRow() { },
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     global.Logger = {
       log: jest.fn(),
@@ -47,7 +44,6 @@ describe("#onFormSubmit()", () => {
     (setUniqueIdOnSubmission as jest.Mock).mockImplementation(() => { return 1 })
   });
 
-  // todo figure out how to make mock of getProperties throw an error
   it('should log an error when getProperties throws an error', () => {
     const message = "test name";
     (getProperties as jest.Mock).mockImplementationOnce(() => { throw new Error(message) })
