@@ -10,7 +10,7 @@ describe("#onFormSubmit()", () => {
   const mockFormData = {
     "First Name": ["Hello"],
     "Last Name": ["World"],
-    "Timestamp": "06/10/2021 10:53:17"
+    Timestamp: "06/10/2021 10:53:17",
   };
 
   const mockEvent = {
@@ -55,7 +55,10 @@ describe("#onFormSubmit()", () => {
     onFormSubmit(mockEvent);
 
     expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify({timeStamp: mockEvent.namedValues.Timestamp, errorMessage: message})
+      JSON.stringify({
+        timeStamp: mockEvent.namedValues.Timestamp,
+        errorMessage: message,
+      })
     );
   });
 
@@ -86,7 +89,10 @@ describe("#onFormSubmit()", () => {
     onFormSubmit(mockEvent);
 
     expect(global.Logger.log).toHaveBeenCalledWith(
-      JSON.stringify({timeStamp: mockEvent.namedValues.Timestamp, errorMessage: message})
+      JSON.stringify({
+        timeStamp: mockEvent.namedValues.Timestamp,
+        errorMessage: message,
+      })
     );
   });
 
