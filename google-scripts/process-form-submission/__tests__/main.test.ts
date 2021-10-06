@@ -6,11 +6,14 @@ import { setUniqueIdOnSubmission } from "../setUniqueIdOnSubmission";
 jest.mock("../getProperties");
 jest.mock("../setUniqueIdOnSubmission");
 
+const googleTimeStamp = "06/10/2021 10:53:17";
+const googleTimeStampISO = "2021-10-06T09:53:00.000Z";
+
 describe("#onFormSubmit()", () => {
   const mockFormData = {
     "First Name": ["Hello"],
     "Last Name": ["World"],
-    Timestamp: "06/10/2021 10:53:17",
+    Timestamp: [googleTimeStamp],
   };
 
   const mockEvent = {
@@ -56,7 +59,7 @@ describe("#onFormSubmit()", () => {
 
     expect(global.Logger.log).toHaveBeenCalledWith(
       JSON.stringify({
-        timeStamp: mockEvent.namedValues.Timestamp,
+        timeStamp: googleTimeStampISO,
         errorMessage: message,
       })
     );
@@ -90,7 +93,7 @@ describe("#onFormSubmit()", () => {
 
     expect(global.Logger.log).toHaveBeenCalledWith(
       JSON.stringify({
-        timeStamp: mockEvent.namedValues.Timestamp,
+        timeStamp: googleTimeStampISO,
         errorMessage: message,
       })
     );
