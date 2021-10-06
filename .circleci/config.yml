@@ -6,7 +6,7 @@ executors:
       - image: circleci/node:14.15.5
 
 references:
-  workspace_root: &workspace_root '~'
+  workspace_root: &workspace_root "~"
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
@@ -30,7 +30,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn --frozen-lockfile    
+          command: yarn --frozen-lockfile
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
@@ -48,13 +48,16 @@ jobs:
           name: Run typecheck
           command: yarn tsc --noEmit
       - run:
+          name: Run lint
+          command: yarn lint
+      - run:
           name: Run tests
           command: yarn test
 
   clasp-push:
     executor: node-executor
     working_directory: ~/project/google-scripts
-    steps:    
+    steps:
       - *attach_workspace
       - run:
           name: create clasprc.json file in root
@@ -64,8 +67,8 @@ jobs:
           name: create appsscript.json file
           command: |
             echo "{\"timeZone\": \"Europe\/London\",\"dependencies\": {},\"exceptionLogging\": \"STACKDRIVER\",\"runtimeVersion\": \"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
-      - run:    
-          name: Clasp push          
+      - run:
+          name: Clasp push
           command: ./node_modules/@google/clasp/build/src/index.js push --force
 
 workflows:
@@ -84,4 +87,4 @@ workflows:
             - unit-tests
           filters:
             branches:
-              only: main     
+              only: main
