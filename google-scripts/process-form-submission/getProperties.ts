@@ -1,17 +1,10 @@
 export function getProperties() {
-  const REFERRALS_SHEET_NAME =
-    PropertiesService.getScriptProperties().getProperty("MASH_SHEET_NAME");
+  const { getProperty } = PropertiesService.getScriptProperties();
 
-  const S3_ENDPOINT_API = PropertiesService.getScriptProperties().getProperty(
-    "REFERRALS_BUCKET_URL"
-  );
-  const S3_ENDPOINT_API_KEY =
-    PropertiesService.getScriptProperties().getProperty(
-      "REFERRALS_BUCKET_API_KEY"
-    );
-
-  const FORM_SUBMISSION_ID_COLUMN_POSITION =
-    PropertiesService.getScriptProperties().getProperty("UNIQUE_ID_COLUMN_NO");
+  const REFERRALS_SHEET_NAME = getProperty("MASH_SHEET_NAME");
+  const S3_ENDPOINT_API = getProperty("REFERRALS_BUCKET_URL");
+  const S3_ENDPOINT_API_KEY = getProperty("REFERRALS_BUCKET_API_KEY");
+  const FORM_SUBMISSION_ID_COLUMN_POSITION = getProperty("UNIQUE_ID_COLUMN_NO");
 
   if (!REFERRALS_SHEET_NAME) {
     throw new Error("Property MASH_SHEET_NAME could not be found");
