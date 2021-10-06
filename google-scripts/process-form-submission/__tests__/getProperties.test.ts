@@ -1,7 +1,7 @@
 import {getProperties} from "../getProperties";
 import { MockPropertiesService } from "../__mocks__/google_mocks";
 
-describe.only("#getProperties", () => {
+describe("#getProperties", () => {
   let testProperties: Map<string, string | null>;
 
   const MASH_SHEET_NAME = "EXAMPLE_SHEET_NAME";
