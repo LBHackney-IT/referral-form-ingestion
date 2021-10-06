@@ -19,3 +19,15 @@
 4.  Run the tests
 
         yarn test
+
+## Linting and formatting
+
+We use [`prettier`](https://prettier.io/) to format our code in a consistent manner. You can check your code formatting by running:
+
+    yarn lint
+
+>Note: this is run automatically as part of the CI pipeline, and will fail the build if there are formatting issues
+
+If errors are identified, you can fix them manually, or try and automatically fix them using:
+
+    yarn format
