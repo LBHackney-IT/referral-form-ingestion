@@ -53,6 +53,8 @@ jobs:
       - run:
           name: Run tests
           command: yarn test
+    environment:
+      TZ: "Europe/London"
 
   clasp-push:
     executor: node-executor
