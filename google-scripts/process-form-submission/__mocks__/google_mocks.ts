@@ -16,3 +16,13 @@ export class MockSpreadsheetApp {
     return MockSpreadsheetApp.mockActiveSpreadsheet;
   }
 }
+
+export class MockPropertiesService {
+  static mockProperties = {
+    getProperty: jest.fn(),
+  } as unknown as GoogleAppsScript.Properties.Properties;
+
+  getScriptProperties() {
+    return MockPropertiesService.mockProperties;
+  }
+}

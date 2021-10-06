@@ -1,7 +1,24 @@
 import { MockSpreadsheetApp } from "../__mocks__/google_mocks";
 import { onFormSubmit } from "../main";
+import { getProperties } from "../getProperties";
+import { setUniqueIdOnSubmission } from "../setUniqueIdOnSubmission";
+
+jest.mock("../getProperties");
+jest.mock("../setUniqueIdOnSubmission");
 
 describe("#onFormSubmit()", () => {
+  const mockFormData = {
+    "First Name": ["Hello"],
+    "Last Name": ["World"],
+  };
+
+  const mockEvent = {
+    namedValues: mockFormData,
+    range: {
+      getRow() {},
+    } as unknown as GoogleAppsScript.Spreadsheet.Range,
+  } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+
   beforeEach(() => {
     jest.resetAllMocks();
 
@@ -15,90 +32,38 @@ describe("#onFormSubmit()", () => {
     global.UrlFetchApp = {
       fetch: jest.fn(),
     } as unknown as GoogleAppsScript.URL_Fetch.UrlFetchApp;
+
+    (getProperties as jest.Mock).mockImplementation(() => ({
+      REFERRALS_SHEET_NAME: "EXAMPLE_SHEET_NAME",
+      S3_ENDPOINT_API: "EXAMPLE_S3_URL",
+      S3_ENDPOINT_API_KEY: "EXAMPLE_API_KEY",
+      FORM_SUBMISSION_ID_COLUMN_POSITION: "1",
+    }));
+
+    (setUniqueIdOnSubmission as jest.Mock).mockImplementation(() => {
+      return 1;
+    });
   });
 
-  it("should get the active sheet for storing the MASH referrals", () => {
-    (
-      MockSpreadsheetApp.mockActiveSpreadsheet
-        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveSheet;
+  it("should log an error when getProperties throws an error", () => {
+    const message = "test name";
+    (getProperties as jest.Mock).mockImplementationOnce(() => {
+      throw new Error(message);
     });
-
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
     onFormSubmit(mockEvent);
-
-    expect(
-      MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName
-    ).toHaveBeenCalledWith("EXAMPLE_SHEET_NAME");
-  });
-
-  it("should return an error if the active sheet is not found", () => {
-    (
-      MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName as jest.Mock<null>
-    ).mockImplementation(() => {
-      return null;
-    });
-
-    // Explicitly setting the mock to return null above
-    // as this would always return undefined if the mock is not set up
-
-    const sheetNotFoundError = new Error(
-      "Sheet by name method returned null or undefined"
-    );
-
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
-    try {
-      onFormSubmit(mockEvent);
-    } catch (e) {
-      expect(e).toEqual(sheetNotFoundError);
-    }
-  });
-
-  it("should log the form data, event & error message when an error occurs", () => {
-    const sheetNotFoundError = new Error(
-      "Sheet by name method returned null or undefined"
-    );
-
-    const mockFormSubmission = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
-
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormSubmission,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
-    try {
-      onFormSubmit(mockEvent);
-    } catch (e) {}
 
     expect(global.Logger.log).toHaveBeenCalledWith(
       JSON.stringify(mockEvent.namedValues),
       {
         event: mockEvent,
       },
-      sheetNotFoundError
+      message
     );
   });
 
-  it("should get the range for the row above where the form data was submitted", () => {
+  it("should get the active sheet for storing the MASH referrals", () => {
+    // Arrange: Set up mocks and their return values
     (
       MockSpreadsheetApp.mockActiveSpreadsheet
         .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
@@ -106,151 +71,63 @@ describe("#onFormSubmit()", () => {
       return MockSpreadsheetApp.mockActiveSheet;
     });
 
-    const currentRow = 7;
-    const previousRow = 6;
-    const setFormIdColumn = 1;
+    // Act: Trigger event when form is submitted
+    onFormSubmit(mockEvent);
 
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {
-          return currentRow;
-        },
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+    // Assertion: Gets the active sheet
+    expect(
+      MockSpreadsheetApp.mockActiveSpreadsheet.getSheetByName
+    ).toHaveBeenCalledWith("EXAMPLE_SHEET_NAME");
+  });
+
+  it("should log an error when setUniqueIdOnSubmission throws one", () => {
+    const message = "Error";
+    (setUniqueIdOnSubmission as jest.Mock).mockImplementationOnce(() => {
+      throw new Error(message);
+    });
 
     onFormSubmit(mockEvent);
 
-    expect(MockSpreadsheetApp.mockActiveSheet.getRange).toHaveBeenCalledWith(
-      previousRow,
-      setFormIdColumn
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockEvent.namedValues),
+      {
+        event: mockEvent,
+      },
+      message
     );
   });
 
-  it("should get the value of the form ID for the previous form data entry", () => {
-    (
-      MockSpreadsheetApp.mockActiveSpreadsheet
-        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveSheet;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveSheet
-        .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveRange;
-    });
-
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
+  it("should call setUniqueIdOnSubmission with the correct parameters", () => {
+    const mockSetUniqueIdOnSubmission = setUniqueIdOnSubmission as jest.Mock;
 
     onFormSubmit(mockEvent);
 
-    expect(MockSpreadsheetApp.mockActiveRange.getValue).toHaveBeenCalled();
-  });
-
-  it("should set a next value as the ID for the current form data entry", () => {
-    const currentRow = 11;
-    const previousFormId = 99;
-
-    const mockEvent = {
-      sample: "event",
-      range: {
-        getRow() {
-          return currentRow;
-        },
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
-    (
-      MockSpreadsheetApp.mockActiveSpreadsheet
-        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveSheet;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveSheet
-        .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveRange;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveRange.getValue as jest.Mock<number>
-    ).mockImplementation(() => {
-      return previousFormId;
-    });
-
-    onFormSubmit(mockEvent);
-
-    expect(MockSpreadsheetApp.mockActiveRange.setValue).toHaveBeenCalledWith(
-      100
+    expect(mockSetUniqueIdOnSubmission).toBeCalledWith(
+      undefined,
+      "1",
+      mockEvent
     );
   });
 
   it("should send the form data with its ID to AWS for further processing", () => {
-    const mockFormSubmission = {
-      "First Name": ["Hello"],
-      "Last Name": ["World"],
-    };
+    const submissionId = "1";
 
-    const previousFormId = 99;
+    const formDataWithId = mockEvent.namedValues;
+    formDataWithId.FormSubmissionId = [submissionId];
 
-    const mockEvent = {
-      sample: "event",
-      namedValues: mockFormSubmission,
-      range: {
-        getRow() {},
-      } as unknown as GoogleAppsScript.Spreadsheet.Range,
-    } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
-
-    (
-      MockSpreadsheetApp.mockActiveSpreadsheet
-        .getSheetByName as jest.Mock<GoogleAppsScript.Spreadsheet.Sheet>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveSheet;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveSheet
-        .getRange as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveRange;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveRange.getValue as jest.Mock<number>
-    ).mockImplementation(() => {
-      return previousFormId;
-    });
-
-    (
-      MockSpreadsheetApp.mockActiveRange
-        .setValue as jest.Mock<GoogleAppsScript.Spreadsheet.Range>
-    ).mockImplementation(() => {
-      return MockSpreadsheetApp.mockActiveRange;
-    });
-
-    onFormSubmit(mockEvent);
-
-    var formDataWithId = mockEvent.namedValues;
-    formDataWithId.FormSubmissionId = ["100"];
-
-    var options = {
+    const options = {
       method: "put",
       headers: { "X-API-KEY": "EXAMPLE_API_KEY" },
       contentType: "application/json",
       payload: JSON.stringify(formDataWithId),
     };
 
+    // Act: Trigger event when form is submitted
+    onFormSubmit(mockEvent);
+
+    // Assertion: Form submission data including generated unique ID sent to AWS
     expect(global.UrlFetchApp.fetch).toHaveBeenCalledWith(
-      `EXAMPLE_ENDPOINT/form-submissions/100`,
+      `EXAMPLE_S3_URL/form-submissions/${submissionId}`,
       options
     );
   });
