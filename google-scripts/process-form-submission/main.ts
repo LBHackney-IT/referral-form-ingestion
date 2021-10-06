@@ -31,7 +31,10 @@ export function onFormSubmit(
     sendDataToS3(S3_ENDPOINT_API, S3_ENDPOINT_API_KEY, currentUniqueId);
   } catch (e: any) {
     Logger.log(
-      JSON.stringify({ timeStamp: generateISOTimestamp(formData.Timestamp), errorMessage: e.message })
+      JSON.stringify({
+        timeStamp: generateISOTimestamp(formData.Timestamp),
+        errorMessage: e.message,
+      })
     );
   }
 
