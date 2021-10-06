@@ -31,7 +31,10 @@ export function onFormSubmit(
     sendDataToS3(S3_ENDPOINT_API, S3_ENDPOINT_API_KEY, currentUniqueId);
   } catch (e: any) {
     Logger.log(
-      JSON.stringify({ timeStamp: formData.Timestamp, errorMessage: e.message })
+      JSON.stringify({
+        timeStamp: generateISOTimestamp(formData.Timestamp),
+        errorMessage: e.message,
+      })
     );
   }
 
@@ -48,5 +51,16 @@ export function onFormSubmit(
     } as GoogleAppsScript.URL_Fetch.URLFetchRequestOptions;
 
     UrlFetchApp.fetch(`${apiUrl}/form-submissions/${currentUniqueId}`, options);
+  }
+
+  function generateISOTimestamp(googleTimeStamp: string[]) {
+    // google timestamp is in the format [dd/MM/yyyy HH:mm:ss]
+    const [date, time] = googleTimeStamp[0].split(" ");
+
+    const [day, month, year] = date.split("/").map(Number);
+    const [hour, minute] = time.split(":").map(Number);
+
+    // subtract 1 from the month because in JS months start at 0, January is 0, google timestamp has January as 1
+    return new Date(year, month - 1, day, hour, minute).toISOString();
   }
 }
