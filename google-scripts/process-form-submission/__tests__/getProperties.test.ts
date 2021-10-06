@@ -1,4 +1,4 @@
-import {getProperties} from "../getProperties";
+import { getProperties } from "../getProperties";
 import { MockPropertiesService } from "../__mocks__/google_mocks";
 
 describe("#getProperties", () => {
@@ -18,7 +18,9 @@ describe("#getProperties", () => {
     ]);
 
     (
-      MockPropertiesService.mockProperties.getProperty as jest.Mock<string | null>
+      MockPropertiesService.mockProperties.getProperty as jest.Mock<
+        string | null
+      >
     ).mockImplementation((a) => {
       if (testProperties.has(a)) {
         return testProperties.get(a) as string | null;

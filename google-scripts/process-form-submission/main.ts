@@ -18,7 +18,11 @@ export function onFormSubmit(
       `${REFERRALS_SHEET_NAME}`
     );
 
-    const currentUniqueId = setUniqueIdOnSubmission(referralsSheet, FORM_SUBMISSION_ID_COLUMN_POSITION, event)
+    const currentUniqueId = setUniqueIdOnSubmission(
+      referralsSheet,
+      FORM_SUBMISSION_ID_COLUMN_POSITION,
+      event
+    );
 
     // Update the form submission object to contain its unique ID
     formData.FormSubmissionId = [currentUniqueId.toString()];
@@ -35,7 +39,11 @@ export function onFormSubmit(
     );
   }
 
-  function sendDataToS3(apiUrl: string, apiKey: string, currentUniqueId: number) {
+  function sendDataToS3(
+    apiUrl: string,
+    apiKey: string,
+    currentUniqueId: number
+  ) {
     const options = {
       method: "put",
       headers: { "X-API-KEY": apiKey },

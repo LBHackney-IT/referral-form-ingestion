@@ -3,20 +3,19 @@ import { onFormSubmit } from "../main";
 import { getProperties } from "../getProperties";
 import { setUniqueIdOnSubmission } from "../setUniqueIdOnSubmission";
 
-jest.mock("../getProperties")
-jest.mock("../setUniqueIdOnSubmission")
+jest.mock("../getProperties");
+jest.mock("../setUniqueIdOnSubmission");
 
 describe("#onFormSubmit()", () => {
-  
   const mockFormData = {
     "First Name": ["Hello"],
     "Last Name": ["World"],
-  }
+  };
 
   const mockEvent = {
     namedValues: mockFormData,
     range: {
-      getRow() { },
+      getRow() {},
     } as unknown as GoogleAppsScript.Spreadsheet.Range,
   } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
@@ -41,21 +40,27 @@ describe("#onFormSubmit()", () => {
       FORM_SUBMISSION_ID_COLUMN_POSITION: "1",
     }));
 
-    (setUniqueIdOnSubmission as jest.Mock).mockImplementation(() => { return 1 })
+    (setUniqueIdOnSubmission as jest.Mock).mockImplementation(() => {
+      return 1;
+    });
   });
 
-  it('should log an error when getProperties throws an error', () => {
+  it("should log an error when getProperties throws an error", () => {
     const message = "test name";
-    (getProperties as jest.Mock).mockImplementationOnce(() => { throw new Error(message) })
+    (getProperties as jest.Mock).mockImplementationOnce(() => {
+      throw new Error(message);
+    });
 
-    onFormSubmit(mockEvent)
+    onFormSubmit(mockEvent);
 
-    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockEvent.namedValues),
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockEvent.namedValues),
       {
         event: mockEvent,
       },
-      message);
-  })
+      message
+    );
+  });
 
   it("should get the active sheet for storing the MASH referrals", () => {
     // Arrange: Set up mocks and their return values
@@ -77,27 +82,35 @@ describe("#onFormSubmit()", () => {
 
   it("should log an error when setUniqueIdOnSubmission throws one", () => {
     const message = "Error";
-    (setUniqueIdOnSubmission as jest.Mock).mockImplementationOnce(() => { throw new Error(message) })
+    (setUniqueIdOnSubmission as jest.Mock).mockImplementationOnce(() => {
+      throw new Error(message);
+    });
 
-    onFormSubmit(mockEvent)
+    onFormSubmit(mockEvent);
 
-    expect(global.Logger.log).toHaveBeenCalledWith(JSON.stringify(mockEvent.namedValues),
+    expect(global.Logger.log).toHaveBeenCalledWith(
+      JSON.stringify(mockEvent.namedValues),
       {
         event: mockEvent,
       },
-      message);
-  })
+      message
+    );
+  });
 
   it("should call setUniqueIdOnSubmission with the correct parameters", () => {
-    const mockSetUniqueIdOnSubmission = (setUniqueIdOnSubmission as jest.Mock)
+    const mockSetUniqueIdOnSubmission = setUniqueIdOnSubmission as jest.Mock;
 
-    onFormSubmit(mockEvent)
+    onFormSubmit(mockEvent);
 
-    expect(mockSetUniqueIdOnSubmission).toBeCalledWith(undefined, "1", mockEvent);
-  })
+    expect(mockSetUniqueIdOnSubmission).toBeCalledWith(
+      undefined,
+      "1",
+      mockEvent
+    );
+  });
 
   it("should send the form data with its ID to AWS for further processing", () => {
-    const submissionId = "1"
+    const submissionId = "1";
 
     const formDataWithId = mockEvent.namedValues;
     formDataWithId.FormSubmissionId = [submissionId];

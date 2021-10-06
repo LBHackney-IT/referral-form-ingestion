@@ -1,7 +1,7 @@
 export function setUniqueIdOnSubmission(
   activeSheet: GoogleAppsScript.Spreadsheet.Sheet | null,
   idColumn: string,
-  event: GoogleAppsScript.Events.SheetsOnFormSubmit,
+  event: GoogleAppsScript.Events.SheetsOnFormSubmit
 ): number {
   if (!activeSheet) {
     throw new Error("Sheet by name method returned null or undefined");
@@ -14,7 +14,9 @@ export function setUniqueIdOnSubmission(
     Number(idColumn)
   );
 
-  const previousSubmissionUniqueId = Number(previousSubmissionIdCell.getValue());
+  const previousSubmissionUniqueId = Number(
+    previousSubmissionIdCell.getValue()
+  );
   const currentSubmissionUniqueId = previousSubmissionUniqueId + 1;
 
   const currentFormIdCell = activeSheet.getRange(
