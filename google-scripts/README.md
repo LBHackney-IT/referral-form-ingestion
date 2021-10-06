@@ -26,7 +26,7 @@ We use [`prettier`](https://prettier.io/) to format our code in a consistent man
 
     yarn lint
 
->Note: this is run automatically as part of the CI pipeline, and will fail the build if there are formatting issues
+> Note: this is run automatically as part of the CI pipeline, and will fail the build if there are formatting issues
 
 If errors are identified, you can fix them manually, or try and automatically fix them using:
 
