@@ -1,7 +1,8 @@
 version: 2.1
-  orbs:
-    aws-cli: circleci/aws-cli@1.0.0
-    aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
+
+orbs:
+  aws-cli: circleci/aws-cli@1.0.0
+  aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
 
 executors:
   node-executor:
@@ -79,12 +80,26 @@ jobs:
           name: Clasp push
           command: ./node_modules/@google/clasp/build/src/index.js push --force
   
+  assume-role-mosaic-production:
+    executor: docker-python
+    steps:
+      - checkout
+      - aws_assume_role/assume_role:
+          account: $AWS_ACCOUNT_PRODUCTION
+          profile_name: default
+          role: 'circleci-assume-role'
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
+
   deploy-lambda:
      executor: aws-cli/default
      steps:
       - *attach_workspace
       - run:
-          name:
+          name: 'deploy'
+          command: 'sudo npm i -g serverless && sls deploy -s mosaic-prod'
 
 
 
@@ -103,6 +118,26 @@ workflows:
       - clasp-push:
           requires:
             - unit-tests
+          filters:
+            branches:
+              only: main
+      - permit-deploy-production:
+          type: approval
+          requires:
+            - clasp-push
+          filters:
+            branches:
+              only: main
+      - assume-role-mosaic-production:
+          context: api-assume-role-social-care-production-context
+          requires:
+            - permit-deploy-production
+          filters:
+            branches:
+              only: main
+      - deploy-lambda:
+          requires:
+            - assume-role-mosaic-production
           filters:
             branches:
               only: main
