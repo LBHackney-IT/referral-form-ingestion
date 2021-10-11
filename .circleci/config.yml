@@ -95,6 +95,7 @@ jobs:
 
   deploy-lambda:
      executor: aws-cli/default
+     working_directory: './referral-form-data-process'
      steps:
       - *attach_workspace
       - run:
