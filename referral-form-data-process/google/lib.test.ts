@@ -1,6 +1,6 @@
 import { createDocumentFromTemplate } from "./lib";
 
-describe("#crcreateDocumentFromTemplateeate", () => {}
+describe("#createDocumentFromTemplate", () => {}
 
 
 ) 
