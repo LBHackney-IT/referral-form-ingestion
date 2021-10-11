@@ -2,7 +2,7 @@
 
 This project processes the data submitted via the MASH (Multi agency Safeguarding Hub) Referrals Google form and enters the data into the Social Care System.
 
-![C4 Component Diagram](./mash-data-import.svg)
+![C4 Component Diagram](mash-data-import.svg)
 
 ## Table of Contents
 
@@ -16,6 +16,8 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
 - [Troubleshooting](#troubleshooting)
   - [Clasp push suddenly stops working](#clasp-push-suddenly-stops-working-consider-this)
 - [Related repositories](#related-repositories)
+- [Active contributors](#active-contributors)
+- [License](#license)
 
 ## Documentation
 
@@ -83,3 +85,14 @@ In case of needing to configure our CircleCi credentials again (if clasp push su
 | [Social Care Case Viewer API](https://github.com/LBHackney-IT/social-care-case-viewer-api)   | Provides [service API](http://playbook.hackney.gov.uk/API-Playbook/platform_api_vs_service_api#a-service-apis) capabilities to the Social Care System.                                                                                                                                                      |
 | [Infrastructure](https://github.com/LBHackney-IT/infrastructure/tree/master/projects/mosaic) | Provides a single place for AWS infrastructure defined using [Terraform](https://www.terraform.io) as [infrastructure as code](https://en.wikipedia.org/wiki/Infrastructure_as_code) as part of Hackney's new AWS account strategy. The S3 bucket (with API gateway) & SQS resources are deployed from here |
 | [API Playbook](http://playbook.hackney.gov.uk/API-Playbook/)                                 | Provides guidance to the standards of APIs within Hackney.                                                                                                                                                                                                                                                  |
+
+## Active contributors
+
+- **Marta Pederiva**, Junior Developer at Hackney (marta.pederiva@hackney.gov.uk)
+- **Miles Alford**, Software Developer Apprentice at Hackney (miles.alford@hackney.gov.uk)
+- **John Farrell**, Senior Software Engineer at Made Tech (john.farrell@hackney.gov.uk)
+- **Renny Fadoju**, Software Engineer at Made Tech (renny.fadoju@hackney.gov.uk)
+
+## License
+
+[MIT License](LICENSE)
