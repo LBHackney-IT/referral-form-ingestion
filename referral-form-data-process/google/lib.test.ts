@@ -81,6 +81,10 @@ describe("#createDocumentFromTemplate", () => {
         // createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
 
         // expect(mockGoogleApiDriveCopy.files.copy).toBeCalledWith({})
+
+        //we are trying to mocks docs to return an object which should have a documents property
+        //which should have a get function
+        //this is to test this function is called correctly
     })
 
 
