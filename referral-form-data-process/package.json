@@ -5,12 +5,12 @@
   "main": "handler.js",
   "scripts": {
     "document": "ts-node src/document.ts",
-    "sheet": "ts-node src/sheet.ts"
+    "sheet": "ts-node src/sheet.ts",
+    "test": "jest"
   },
   "dependencies": {
     "googleapis": "^80.1.0"
   },
-
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "jest": "^27.0.6",
