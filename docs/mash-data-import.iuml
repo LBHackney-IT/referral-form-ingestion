@@ -18,7 +18,7 @@ System_Boundary(googles, "Google") {
 
 }
 
-System_Boundary(system, "Social Care") {
+System_Boundary(system, "Social Care (AWS)") {
 Container(aws_s3, "AWS S3", "object storage service")
 Container(aws_SQS, "AWS SQS", "message queuing service", "Creates a message queue")
 Container(aws_lambda, "AWS Lambda",  "Lambda", "")
