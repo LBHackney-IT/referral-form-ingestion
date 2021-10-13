@@ -1,15 +1,31 @@
 import { OAuth2Client } from "google-auth-library";
 import { createDocumentFromTemplate } from "./lib";
-import { google } from "googleapis";
+import { google }  from "googleapis";
 
-jest.mock("googleapis");
-
-// we import google from googleapis
-// google contains a class called drive which we create
-// drive has a property files which has a function copy that we call
-// we need to check copy is called with the right given parameters
-
-// we need to make sure google.drive returns an object with a files property with a mocked copy function
+jest.mock('googleapis', () => ({
+    google: {
+            drive: jest.fn().mockImplementation(() => ({
+                files: {
+                    copy: jest.fn().mockImplementation(() => ({
+                        data: {
+                            id: "1"
+                        }
+                    }))
+                }
+            })),
+            docs: jest.fn().mockImplementation(() => ({
+                documents: {
+                    get: jest.fn().mockImplementation(() => ({
+                        data: {
+                            documentId: "2"
+                        }
+                    })),
+                    batchUpdate: jest.fn().mockImplementation(() => {})
+                }
+            }))
+        }
+    })
+)
 
 describe("#createDocumentFromTemplate", () => {
     const mockAuth = {
@@ -21,44 +37,6 @@ describe("#createDocumentFromTemplate", () => {
             expiry_date: "1633950562052"
         }
     } as unknown as OAuth2Client
-
-    const mockCopy = jest.fn();
-    // const mockGet = jest.fn();
-
-    beforeEach(() => {
-        (google.drive as jest.Mock).mockImplementation(() => {
-            return {
-                files: {
-                    copy: mockCopy
-                }
-            }
-        })
-
-        // (google.docs as jest.Mock).mockImplementation(() => {
-        //     return {
-        //         documents: {
-        //             get: mockGet
-        //         }
-        //     }
-        // })
-
-        mockCopy.mockImplementation(() => {
-            return {
-                data: {
-                    id: "1"
-                }
-            }
-        })
-
-        // mockGet.mockImplementation(() => {
-        //     return {
-        //         data: {
-        //             documentId: "1"
-        //         }
-        //     }
-        // })
-    })
-
 
     it("should call google drive", async () => {
         const mockGoogleApiDrive = google.drive as jest.Mock
