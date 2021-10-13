@@ -2,15 +2,12 @@ import { OAuth2Client } from "google-auth-library";
 import { createDocumentFromTemplate } from "./lib";
 import { google }  from "googleapis";
 
+const mockCopy = jest.fn()
 jest.mock('googleapis', () => ({
     google: {
             drive: jest.fn().mockImplementation(() => ({
                 files: {
-                    copy: jest.fn().mockImplementation(() => ({
-                        data: {
-                            id: "1"
-                        }
-                    }))
+                    copy: mockCopy
                 }
             })),
             docs: jest.fn().mockImplementation(() => ({
@@ -38,12 +35,15 @@ describe("#createDocumentFromTemplate", () => {
         }
     } as unknown as OAuth2Client
 
-    it("should call google drive", async () => {
-        const mockGoogleApiDrive = google.drive as jest.Mock
+    beforeEach( () => {
+        mockCopy.mockReset();
+        mockCopy.mockImplementation(() => ({data: {id:"1"}}))               
+    } )
 
+    it("should call google drive", async () => {
         await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
 
-        expect(mockGoogleApiDrive).toBeCalledWith({ version: "v3", auth: mockAuth })
+        expect(google.drive).toBeCalledWith({ version: "v3", auth: mockAuth })
     })
 
     it("should call google docs", async () => {
@@ -55,14 +55,12 @@ describe("#createDocumentFromTemplate", () => {
     })
 
     it("should call google drive's copy function with the correct parameters", async () => {
-        // const mockGoogleApiDriveCopy = google.drive as unknown as jest.Mock<any>
-        // createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+        const fileId ="test"
+        const expName = "title"
+        await createDocumentFromTemplate(mockAuth, fileId, "title", { one: "one" })
 
-        // expect(mockGoogleApiDriveCopy.files.copy).toBeCalledWith({})
+        expect(mockCopy).toBeCalledWith({fileId:fileId, requestBody:{name: expName}})
 
-        //we are trying to mocks docs to return an object which should have a documents property
-        //which should have a get function
-        //this is to test this function is called correctly
     })
 
 
