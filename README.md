@@ -2,22 +2,24 @@
 
 This project processes the data submitted via the MASH (Multi agency Safeguarding Hub) Referrals Google form and enters the data into the Social Care System.
 
-![C4 Component Diagram](mash-data-import.svg)
+![C4 Component Diagram](docs/mash-data-import.svg)
 
 ## Table of Contents
 
-- [Documentation](#documentation)
-  - [Architecture](#architecture)
-    - [Google Side of Things](#google-side-of-things)
-    - [AWS Side of Things](#aws-side-of-things)
-  - [Brainstorming the new process design](#brainstorming-the-new-process-design)
-- [Deployments](#deployments)
-  - [How to configure CircleCI for automated deployment of our appscript](#how-to-configure-circleci-for-automated-deployment-of-our-appscript)
-- [Troubleshooting](#troubleshooting)
-  - [Clasp push suddenly stops working](#clasp-push-suddenly-stops-working-consider-this)
-- [Related repositories](#related-repositories)
-- [Active contributors](#active-contributors)
-- [License](#license)
+- [Social Care Referral Form Ingestion Process](#social-care-referral-form-ingestion-process)
+  - [Table of Contents](#table-of-contents)
+  - [Documentation](#documentation)
+    - [Architecture](#architecture)
+      - [Google Side of Things](#google-side-of-things)
+      - [AWS Side of Things](#aws-side-of-things)
+    - [Brainstorming the new process design](#brainstorming-the-new-process-design)
+  - [Deployments](#deployments)
+    - [How to configure CircleCI for automated deployment of our appscript](#how-to-configure-circleci-for-automated-deployment-of-our-appscript)
+  - [Troubleshooting](#troubleshooting)
+    - [Clasp push suddenly stops working](#clasp-push-suddenly-stops-working)
+  - [Related repositories](#related-repositories)
+  - [Active contributors](#active-contributors)
+  - [License](#license)
 
 ## Documentation
 
@@ -53,6 +55,8 @@ Once the MASH Google Sheet has been updated, the form data, its ID and its Googl
 This goal of this project is to replace the existing process which is quite brittle with a more robust one while incoporating the workflow into the Social Care System.
 
 The [initial MASH handover board](https://miro.com/app/board/o9J_l-7l2BU=/) describes the current process steps, suggestions of UI and ways we could automate the process within the System.
+
+![Sequence Diagram](docs/mash-data-import-sequence.svg)
 
 ## Deployments
 
