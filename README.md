@@ -56,6 +56,8 @@ This goal of this project is to replace the existing process which is quite brit
 
 The [initial MASH handover board](https://miro.com/app/board/o9J_l-7l2BU=/) describes the current process steps, suggestions of UI and ways we could automate the process within the System.
 
+![Sequence Diagram](docs/mash-data-import-sequence.svg)
+
 ## Deployments
 
 ### How to configure CircleCI for automated deployment of our appscript
