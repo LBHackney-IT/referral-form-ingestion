@@ -1,15 +1,9 @@
-import { SQSEvent } from "aws-lambda";
+import { S3Event } from "aws-lambda";
 
-export const hello = async (event: SQSEvent) => {
+export const getDataFromS3 = async (event: S3Event) => {
+  const objectPath = event.Records[0].s3.object.key;
+
   return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: "Go Serverless v2.0! Your function executed successfully!",
-        input: event,
-      },
-      null,
-      2
-    ),
+    body: objectPath,
   };
 };
