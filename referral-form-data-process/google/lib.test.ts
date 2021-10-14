@@ -3,6 +3,7 @@ import { createDocumentFromTemplate } from "./lib";
 import { google }  from "googleapis";
 
 const mockCopy = jest.fn()
+const mockGet = jest.fn()
 jest.mock('googleapis', () => ({
     google: {
             drive: jest.fn().mockImplementation(() => ({
@@ -12,12 +13,8 @@ jest.mock('googleapis', () => ({
             })),
             docs: jest.fn().mockImplementation(() => ({
                 documents: {
-                    get: jest.fn().mockImplementation(() => ({
-                        data: {
-                            documentId: "2"
-                        }
-                    })),
-                    batchUpdate: jest.fn().mockImplementation(() => {})
+                    get: mockGet,
+                    batchUpdate: jest.fn()
                 }
             }))
         }
@@ -37,7 +34,14 @@ describe("#createDocumentFromTemplate", () => {
 
     beforeEach( () => {
         mockCopy.mockReset();
-        mockCopy.mockImplementation(() => ({data: {id:"1"}}))               
+
+        mockCopy.mockImplementation(() => ({data: {id:"1"}}))    
+        
+        mockGet.mockImplementation(() => ({
+            data: {
+                documentId: "2"
+            }
+        }))           
     } )
 
     it("should call google drive", async () => {
@@ -47,11 +51,9 @@ describe("#createDocumentFromTemplate", () => {
     })
 
     it("should call google docs", async () => {
-        const mockGoogleApiSheet = google.docs as jest.Mock
-
         await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
 
-        expect(mockGoogleApiSheet).toBeCalledWith({ version: "v1", auth: mockAuth })
+        expect(google.docs).toBeCalledWith({ version: "v1", auth: mockAuth })
     })
 
     it("should call google drive's copy function with the correct parameters", async () => {
@@ -60,9 +62,50 @@ describe("#createDocumentFromTemplate", () => {
         await createDocumentFromTemplate(mockAuth, fileId, "title", { one: "one" })
 
         expect(mockCopy).toBeCalledWith({fileId:fileId, requestBody:{name: expName}})
+    })
+
+    it("should thrown an exception when drive's copy function returns undefined data", async () => {
 
     })
 
+    it("should thrown an exception when drive's copy function returns data with a null id", async () => {
+        
+    })
 
+    it("should thrown an exception when drive's copy function returns data with an undefined id", async () => {
+        
+    })
+
+    it("should thrown an exception when drive's copy function returns data with an empty string as the id", async () => {
+        
+    })
+
+    it("should call google document's get function with the correct parameters", async () => {
+        
+    })
+
+    it("should thrown an exception when document's get function returns undefined data", async () => {
+
+    })
+
+    it("should thrown an exception when document's get function returns data with a null id", async () => {
+        
+    })
+
+    it("should thrown an exception when document's get function returns data with an undefined id", async () => {
+        
+    })
+
+    it("should thrown an exception when document's get function returns data with an empty string as the id", async () => {
+        
+    })
+
+    it("should call google document's batch update with the correct parameters", async () => {
+
+    })
+
+    it("should return the newly created document", async () => {
+
+    })
 }
 )
