@@ -1,24 +1,24 @@
 import { OAuth2Client } from "google-auth-library";
 import { createDocumentFromTemplate } from "./lib";
-import { google }  from "googleapis";
+import { google } from "googleapis";
 
 const mockCopy = jest.fn()
 const mockGet = jest.fn()
 jest.mock('googleapis', () => ({
     google: {
-            drive: jest.fn().mockImplementation(() => ({
-                files: {
-                    copy: mockCopy
-                }
-            })),
-            docs: jest.fn().mockImplementation(() => ({
-                documents: {
-                    get: mockGet,
-                    batchUpdate: jest.fn()
-                }
-            }))
-        }
-    })
+        drive: jest.fn().mockImplementation(() => ({
+            files: {
+                copy: mockCopy
+            }
+        })),
+        docs: jest.fn().mockImplementation(() => ({
+            documents: {
+                get: mockGet,
+                batchUpdate: jest.fn()
+            }
+        }))
+    }
+})
 )
 
 describe("#createDocumentFromTemplate", () => {
@@ -36,18 +36,19 @@ describe("#createDocumentFromTemplate", () => {
     const googleDriveVersion = "v3";
     const testTemplateDocumentId = "test-template-document-id";
     const newDocumentTitle = "test-new-document-title";
+    const testDuplicateFileId = "1"
 
-    beforeEach( () => {
+    beforeEach(() => {
         mockCopy.mockReset();
 
-        mockCopy.mockImplementation(() => ({data: {id:"1"}}))    
-        
+        mockCopy.mockImplementation(() => ({ data: { id: testDuplicateFileId } }))
+
         mockGet.mockImplementation(() => ({
             data: {
                 documentId: "2"
             }
-        }))           
-    } )
+        }))
+    })
 
     it("should call google drive", async () => {
         await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
@@ -64,17 +65,17 @@ describe("#createDocumentFromTemplate", () => {
     it("should call google drive's copy function with the correct parameters", async () => {
         await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
 
-        expect(mockCopy).toBeCalledWith({fileId: testTemplateDocumentId, requestBody:{name: newDocumentTitle}})
+        expect(mockCopy).toBeCalledWith({ fileId: testTemplateDocumentId, requestBody: { name: newDocumentTitle } })
     })
 
     it("should thrown an exception when drive's copy function returns undefined data", async () => {
-        mockCopy.mockImplementationOnce(() => ({data: undefined}))
+        mockCopy.mockImplementationOnce(() => ({ data: undefined }))
 
         try {
             await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
-        } catch(e: unknown) {
-            if(e instanceof Error) {
+        } catch (e: unknown) {
+            if (e instanceof Error) {
                 expect(e.message).toBe("Unable to duplicate template file");
             } else {
                 fail('exception should be instance of Error')
@@ -83,13 +84,13 @@ describe("#createDocumentFromTemplate", () => {
     })
 
     it("should thrown an exception when drive's copy function returns data with a null id", async () => {
-        mockCopy.mockImplementationOnce(() => ({data: {id: null}}))
+        mockCopy.mockImplementationOnce(() => ({ data: { id: null } }))
 
         try {
             await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
-        } catch(e: unknown) {
-            if(e instanceof Error) {
+        } catch (e: unknown) {
+            if (e instanceof Error) {
                 expect(e.message).toBe("Unable to duplicate template file");
             } else {
                 fail('exception should be instance of Error')
@@ -98,13 +99,13 @@ describe("#createDocumentFromTemplate", () => {
     })
 
     it("should thrown an exception when drive's copy function returns data with an undefined id", async () => {
-        mockCopy.mockImplementationOnce(() => ({data: {id: undefined}}))
+        mockCopy.mockImplementationOnce(() => ({ data: { id: undefined } }))
 
         try {
             await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
-        } catch(e: unknown) {
-            if(e instanceof Error) {
+        } catch (e: unknown) {
+            if (e instanceof Error) {
                 expect(e.message).toBe("Unable to duplicate template file");
             } else {
                 fail('exception should be instance of Error')
@@ -113,13 +114,13 @@ describe("#createDocumentFromTemplate", () => {
     })
 
     it("should thrown an exception when drive's copy function returns data with an empty string as the id", async () => {
-        mockCopy.mockImplementationOnce(() => ({data: {id: ""}}))
+        mockCopy.mockImplementationOnce(() => ({ data: { id: "" } }))
 
         try {
             await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
-        } catch(e: unknown) {
-            if(e instanceof Error) {
+        } catch (e: unknown) {
+            if (e instanceof Error) {
                 expect(e.message).toBe("Unable to duplicate template file");
             } else {
                 fail('exception should be instance of Error')
@@ -128,23 +129,69 @@ describe("#createDocumentFromTemplate", () => {
     })
 
     it("should call google document's get function with the correct parameters", async () => {
-        
+        await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
+
+        expect(mockGet).toBeCalledWith({ documentId: testDuplicateFileId })
     })
 
     it("should thrown an exception when document's get function returns undefined data", async () => {
+        mockGet.mockImplementationOnce(() => ({ data: undefined }))
 
+        try {
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                expect(e.message).toBe("Unable to find new document");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
-    it("should thrown an exception when document's get function returns data with a null id", async () => {
-        
+    it("should thrown an exception when document's get function returns data with a null document id", async () => {
+        mockGet.mockImplementationOnce(() => ({ data: { documentId: null } }))
+
+        try {
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                expect(e.message).toBe("Unable to find new document");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
-    it("should thrown an exception when document's get function returns data with an undefined id", async () => {
-        
+    it("should thrown an exception when document's get function returns data with an undefined document id", async () => {
+        mockGet.mockImplementationOnce(() => ({ data: { documentId: undefined } }))
+
+        try {
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                expect(e.message).toBe("Unable to find new document");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
-    it("should thrown an exception when document's get function returns data with an empty string as the id", async () => {
-        
+    it("should thrown an exception when document's get function returns data with an empty string as the document id", async () => {
+        mockGet.mockImplementationOnce(() => ({ data: { documentId: "" } }))
+
+        try {
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                expect(e.message).toBe("Unable to find new document");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
     it("should call google document's batch update with the correct parameters", async () => {
