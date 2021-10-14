@@ -31,29 +31,11 @@ export const createDocumentFromTemplate = async (
   if (!duplicateTemplateDocument || !duplicateTemplateDocument.documentId) {
     throw new Error("Unable to find new document");
   }
-  const batchUpdateRequsts = [];
-  for (let i = 0; i < Object.entries(inputData).length; i++) {
-    const [key, value] = Object.entries(inputData)[i];
-    if (!value.toString()) {
-      continue
-    }
-    const updateRequestObject = {
-      replaceAllText: {
-        containsText: {
-          text: `{{${key}}}`,
-          matchCase: true,
-        },
-        replaceText: value.toString() || `{{${key}}}`,
-      }
-    }
-    batchUpdateRequsts.push(updateRequestObject);
-  }
-
 
   await docs.documents.batchUpdate({
     documentId: duplicateTemplateDocument.documentId,
     requestBody: {
-      requests: batchUpdateRequsts,
+      requests: generateBatchUpdateRequests(inputData),
     },
   });
 
@@ -62,3 +44,37 @@ export const createDocumentFromTemplate = async (
   });
   return newDocument;
 };
+
+function generateBatchUpdateRequests(
+  inputData: Record<string, string | number>
+) {
+  const batchUpdateRequests: {
+    replaceAllText: {
+      containsText: {
+        text: string;
+        matchCase: boolean;
+      };
+      replaceText: string;
+    };
+  }[] = [];
+
+  const inputDataEntries = Object.entries(inputData);
+
+  for (let i = 0; i < inputDataEntries.length; i++) {
+    const [key, value] = inputDataEntries[i];
+
+    if (!value.toString()) continue;
+
+    const updateRequestObject = {
+      replaceAllText: {
+        containsText: {
+          text: `{{${key}}}`,
+          matchCase: true,
+        },
+        replaceText: value.toString() || `{{${key}}}`,
+      },
+    };
+    batchUpdateRequests.push(updateRequestObject);
+  }
+  return batchUpdateRequests;
+}
