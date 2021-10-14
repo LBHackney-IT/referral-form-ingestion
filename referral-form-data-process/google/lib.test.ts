@@ -32,6 +32,10 @@ describe("#createDocumentFromTemplate", () => {
         }
     } as unknown as OAuth2Client
 
+    const googleDocsVersion = "v1";
+    const googleDriveVersion = "v3";
+    const testTemplateDocumentId = "test-template-document-id";
+    const newDocumentTitle = "test-new-document-title";
 
     beforeEach( () => {
         mockCopy.mockReset();
@@ -46,30 +50,28 @@ describe("#createDocumentFromTemplate", () => {
     } )
 
     it("should call google drive", async () => {
-        await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+        await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
 
-        expect(google.drive).toBeCalledWith({ version: "v3", auth: mockAuth })
+        expect(google.drive).toBeCalledWith({ version: googleDriveVersion, auth: mockAuth })
     })
 
     it("should call google docs", async () => {
-        await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+        await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
 
-        expect(google.docs).toBeCalledWith({ version: "v1", auth: mockAuth })
+        expect(google.docs).toBeCalledWith({ version: googleDocsVersion, auth: mockAuth })
     })
 
     it("should call google drive's copy function with the correct parameters", async () => {
-        const fileId ="test"
-        const expName = "title"
-        await createDocumentFromTemplate(mockAuth, fileId, "title", { one: "one" })
+        await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
 
-        expect(mockCopy).toBeCalledWith({fileId:fileId, requestBody:{name: expName}})
+        expect(mockCopy).toBeCalledWith({fileId: testTemplateDocumentId, requestBody:{name: newDocumentTitle}})
     })
 
     it("should thrown an exception when drive's copy function returns undefined data", async () => {
         mockCopy.mockImplementationOnce(() => ({data: undefined}))
 
         try {
-            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
         } catch(e: unknown) {
             if(e instanceof Error) {
@@ -84,7 +86,7 @@ describe("#createDocumentFromTemplate", () => {
         mockCopy.mockImplementationOnce(() => ({data: {id: null}}))
 
         try {
-            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
         } catch(e: unknown) {
             if(e instanceof Error) {
@@ -99,7 +101,7 @@ describe("#createDocumentFromTemplate", () => {
         mockCopy.mockImplementationOnce(() => ({data: {id: undefined}}))
 
         try {
-            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
         } catch(e: unknown) {
             if(e instanceof Error) {
@@ -114,7 +116,7 @@ describe("#createDocumentFromTemplate", () => {
         mockCopy.mockImplementationOnce(() => ({data: {id: ""}}))
 
         try {
-            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            await createDocumentFromTemplate(mockAuth, testTemplateDocumentId, newDocumentTitle, { one: "one" })
             fail('createDocumentFromTemplate should have thrown an exception')
         } catch(e: unknown) {
             if(e instanceof Error) {
