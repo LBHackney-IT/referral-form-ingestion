@@ -32,6 +32,7 @@ describe("#createDocumentFromTemplate", () => {
         }
     } as unknown as OAuth2Client
 
+
     beforeEach( () => {
         mockCopy.mockReset();
 
@@ -65,19 +66,63 @@ describe("#createDocumentFromTemplate", () => {
     })
 
     it("should thrown an exception when drive's copy function returns undefined data", async () => {
+        mockCopy.mockImplementationOnce(() => ({data: undefined}))
 
+        try {
+            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch(e: unknown) {
+            if(e instanceof Error) {
+                expect(e.message).toBe("Unable to duplicate template file");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
     it("should thrown an exception when drive's copy function returns data with a null id", async () => {
-        
+        mockCopy.mockImplementationOnce(() => ({data: {id: null}}))
+
+        try {
+            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch(e: unknown) {
+            if(e instanceof Error) {
+                expect(e.message).toBe("Unable to duplicate template file");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
     it("should thrown an exception when drive's copy function returns data with an undefined id", async () => {
-        
+        mockCopy.mockImplementationOnce(() => ({data: {id: undefined}}))
+
+        try {
+            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch(e: unknown) {
+            if(e instanceof Error) {
+                expect(e.message).toBe("Unable to duplicate template file");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
     it("should thrown an exception when drive's copy function returns data with an empty string as the id", async () => {
-        
+        mockCopy.mockImplementationOnce(() => ({data: {id: ""}}))
+
+        try {
+            await createDocumentFromTemplate(mockAuth, "test", "title", { one: "one" })
+            fail('createDocumentFromTemplate should have thrown an exception')
+        } catch(e: unknown) {
+            if(e instanceof Error) {
+                expect(e.message).toBe("Unable to duplicate template file");
+            } else {
+                fail('exception should be instance of Error')
+            }
+        }
     })
 
     it("should call google document's get function with the correct parameters", async () => {
