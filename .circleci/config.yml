@@ -95,7 +95,7 @@ jobs:
 
   install-dependencies-lambda:
     executor: node-executor
-    working_directory: "./referral-form-data-process"
+    working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - restore_cache:
@@ -113,7 +113,7 @@ jobs:
 
   unit-tests-lambda:
     executor: node-executor
-    working_directory: "./referral-form-data-process"
+    working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - run:
