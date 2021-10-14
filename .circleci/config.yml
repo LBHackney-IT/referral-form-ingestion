@@ -10,7 +10,7 @@ executors:
       - image: cimg/node:14.18.0
   docker-python:
     docker:
-      - image: circleci/python:3.7  
+      - image: circleci/python:3.7
 
 references:
   workspace_root: &workspace_root "~"
@@ -28,7 +28,7 @@ jobs:
           root: *workspace_root
           paths: .
 
-  install-dependencies:
+  install-dependencies-apps-script:
     executor: node-executor
     working_directory: ~/project/google-scripts
     steps:
@@ -46,7 +46,7 @@ jobs:
           root: *workspace_root
           paths: .
 
-  unit-tests:
+  unit-tests-apps-script:
     executor: node-executor
     working_directory: ~/project/google-scripts
     steps:
@@ -79,7 +79,7 @@ jobs:
       - run:
           name: Clasp push
           command: ./node_modules/@google/clasp/build/src/index.js push --force
-  
+
   assume-role-mosaic-production:
     executor: docker-python
     steps:
@@ -87,45 +87,84 @@ jobs:
       - aws_assume_role/assume_role:
           account: $AWS_ACCOUNT_PRODUCTION
           profile_name: default
-          role: 'circleci-assume-role'
+          role: "circleci-assume-role"
       - persist_to_workspace:
           root: *workspace_root
           paths:
             - .aws
 
-  deploy-lambda:
-     executor: aws-cli/default
-     working_directory: './referral-form-data-process'
-     steps:
+  install-dependencies-lambda:
+    executor: node-executor
+    working_directory: "./referral-form-data-process"
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn --frozen-lockfile
+      - save_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
+      - persist_to_workspace:
+          root: *workspace_root
+          paths: .
+
+  unit-tests-lambda:
+    executor: node-executor
+    working_directory: "./referral-form-data-process"
+    steps:
       - *attach_workspace
       - run:
-          name: 'deploy'
-          command: 'sudo npm i -g serverless && sls deploy -s mosaic-prod'
+          name: Run typecheck
+          command: yarn tsc --noEmit
+      - run:
+          name: Run lint
+          command: yarn lint
+      - run:
+          name: Run tests
+          command: yarn test
+    environment:
+      TZ: "Europe/London"
 
-
-
+  deploy-lambda:
+    executor: aws-cli/default
+    working_directory: "./referral-form-data-process"
+    steps:
+      - *attach_workspace
+      - run:
+          name: "deploy"
+          command: "sudo npm i -g serverless && sls deploy -s mosaic-prod"
 
 workflows:
   version: 2
   process-form-submission:
     jobs:
       - checkout
-      - install-dependencies:
+      - install-dependencies-apps-script:
           requires:
             - checkout
-      - unit-tests:
+      - unit-tests-apps-script:
           requires:
-            - install-dependencies
+            - install-dependencies-apps-script
       - clasp-push:
           requires:
-            - unit-tests
+            - unit-tests-apps-script
           filters:
             branches:
               only: main
+      - install-dependencies-lambda:
+          requires:
+            - checkout
+      - unit-tests-lambda:
+          requires:
+            - install-dependencies-lambda
       - permit-deploy-production:
           type: approval
           requires:
             - clasp-push
+            - unit-tests-lambda
           filters:
             branches:
               only: main
