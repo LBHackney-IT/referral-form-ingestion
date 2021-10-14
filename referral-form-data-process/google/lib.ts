@@ -24,16 +24,16 @@ export const createDocumentFromTemplate = async (
       throw new Error("Unable to duplicate template file");
     }
   
-    const { data: newDocument } = await docs.documents.get({
+    const { data: duplicateTemplateDocument } = await docs.documents.get({
       documentId: duplicatedFile.id,
     });
   
-    if (!newDocument || !newDocument.documentId) {
+    if (!duplicateTemplateDocument || !duplicateTemplateDocument.documentId) {
       throw new Error("Unable to find new document");
     }
   
     await docs.documents.batchUpdate({
-      documentId: newDocument.documentId,
+      documentId: duplicateTemplateDocument.documentId,
       requestBody: {
         requests: Object.entries(inputData).map(([key, value]) => ({
           replaceAllText: {
@@ -45,6 +45,10 @@ export const createDocumentFromTemplate = async (
           },
         })),
       },
+    });
+
+    const { data: newDocument } = await docs.documents.get({
+      documentId: duplicateTemplateDocument.documentId,
     });
   
     return newDocument;
