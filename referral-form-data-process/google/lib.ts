@@ -45,18 +45,20 @@ export const createDocumentFromTemplate = async (
   return newDocument;
 };
 
+interface UpdateRequest {
+  replaceAllText: {
+    containsText: {
+      text: string;
+      matchCase: boolean;
+    };
+    replaceText: string;
+  };
+}
+
 function generateBatchUpdateRequests(
   inputData: Record<string, string | number>
 ) {
-  const batchUpdateRequests: {
-    replaceAllText: {
-      containsText: {
-        text: string;
-        matchCase: boolean;
-      };
-      replaceText: string;
-    };
-  }[] = [];
+  const batchUpdateRequests: UpdateRequest[] = [];
 
   const inputDataEntries = Object.entries(inputData);
 
