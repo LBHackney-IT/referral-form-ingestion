@@ -6,3 +6,5 @@ jspm_packages
 
 # Serverless directories
 .serverless
+
+referral-form-data-process/node_modules
