@@ -1,0 +1,28 @@
+@startuml
+
+title MASH data import - Proof of concept
+
+participant "Google Form" as gform
+participant "Google Sheet" as gsheet
+participant "Google Script" as gscript
+participant "AWS S3" as s3
+queue       "AWS SQS" as sqs
+participant "AWS Lambda" as lambda
+participant "Google Doc" as gdoc
+participant "SC API" as scapi
+database    "SC DB" as scdb
+
+note over gform,gsheet:Google automation
+
+gform   -> gsheet:form submission
+gsheet  -> gscript:triggers on form submit
+gsheet  <- gscript:update sheet with generated unique ID
+gscript -> s3:send form data and unique ID (and sheet ID?)
+s3      -> sqs:message is sent to SQS
+sqs     -> lambda:send message to Lambda
+lambda  -> gdoc:generate Google Doc using form data in message\n
+lambda  -> gsheet:update sheet with Google Doc edit URL
+lambda  -> scapi:send form data, unique ID and Google Doc URL
+scapi   -> scdb:save data into DB
+
+@enduml
