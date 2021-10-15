@@ -1,25 +1,18 @@
 {
-  "name": "referral-form-data-process",
+  "name": "@social-care-referral-form-ingestion/referral-form-data-process",
   "version": "1.0.0",
-  "description": "",
-  "main": "handler.js",
+  "license": "MIT",
   "scripts": {
-    "document": "ts-node src/document.ts",
-    "sheet": "ts-node src/sheet.ts",
-    "test": "jest"
-  },
-  "dependencies": {
-    "googleapis": "^80.1.0"
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "jest": "^27.0.6",
-    "ts-jest": "^27.0.4",
-    "dotenv": "^10.0.0",
-    "ts-node": "^10.0.0",
-    "@types/node": "^16.0.0",
-    "typescript": "^4.3.5"
+    "@types/aws-lambda": "^8.10.84",
+    "@types/node": "^16.10.9",
+    "prettier": "^2.4.1",
+    "typescript": "^4.4.4"
   },
-  "author": "",
-  "license": "MIT"
+  "dependencies": {
+    "aws-sdk": "^2.1007.0"
+  }
 }
