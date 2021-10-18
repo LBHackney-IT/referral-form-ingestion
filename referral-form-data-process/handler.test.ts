@@ -1,11 +1,10 @@
 import { S3Event } from "aws-lambda/trigger/s3";
 import { getDataFromS3 } from "./handler";
+import { mockClient } from "aws-sdk-client-mock";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 describe("#getDataFromS3()", () => {
-  const mockS3 = {
-    getObject: jest.fn().mockReturnThis(),
-    promise: jest.fn(),
-  };
+  const mockS3 = mockClient(S3Client);
 
   const mockS3EventNotification = {
     Records: [
@@ -23,19 +22,14 @@ describe("#getDataFromS3()", () => {
   } as unknown as S3Event;
 
   beforeEach(() => {
-    jest.resetAllMocks();
-
-    jest.mock("aws-sdk", () => {
-      return { S3: jest.fn(() => mockS3) };
-    });
+    mockS3.reset();
   });
 
-  it("should get the object from S3 using details from the event", () => {
-    getDataFromS3(mockS3EventNotification);
+  it("should make a call to S3 when the lambda receives an event notification", async () => {
+    mockS3.on(GetObjectCommand).resolves({});
 
-    expect(mockS3.getObject).toBeCalledWith({
-      Bucket: "test-bucket",
-      Key: "test-object-key",
-    });
+    await getDataFromS3(mockS3EventNotification);
+
+    expect(mockS3.calls()).toHaveLength(1);
   });
 });
