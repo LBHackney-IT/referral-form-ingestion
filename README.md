@@ -13,6 +13,7 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
       - [Google Side of Things](#google-side-of-things)
       - [AWS Side of Things](#aws-side-of-things)
     - [Brainstorming the new process design](#brainstorming-the-new-process-design)
+    - [Google Authentication](#google-authentication)
   - [Deployments](#deployments)
     - [How to configure CircleCI for automated deployment of our appscript](#how-to-configure-circleci-for-automated-deployment-of-our-appscript)
   - [Troubleshooting](#troubleshooting)
@@ -57,6 +58,17 @@ This goal of this project is to replace the existing process which is quite brit
 The [initial MASH handover board](https://miro.com/app/board/o9J_l-7l2BU=/) describes the current process steps, suggestions of UI and ways we could automate the process within the System.
 
 ![Sequence Diagram](docs/mash-data-import-sequence.svg)
+
+### Google Authentication
+
+The lambda which creates a new google doc and inserts it into the spreadsheet requires authentication. The steps required to set up this authentication are:
+
+1. Find out who is the most sensible person within Hackney to create a [Google Cloud project](https://console.cloud.google.com/projectselector2/iam-admin/serviceaccount)
+2. Once the project has been created, a service account must be created within the project
+3. After the service account has been created, you must retrieve its credentials which can be downloaded on the service account management page
+4. The important properties from the service account credentials are: `client_email` & `private_key`. The credentials must be retrieved from the person who created the service account and should be stored safely in AWS secrets manager
+5. The service account requires the following API access added from the Google cloud console: Drive, Spreadsheets, Documents
+6. The service account email must also be added as an editor to the desired spreadsheet
 
 ## Deployments
 
