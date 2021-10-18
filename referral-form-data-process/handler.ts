@@ -1,5 +1,6 @@
 import { S3Event } from "aws-lambda";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Readable } from "stream";
 
 export const getDataFromS3 = async (event: S3Event) => {
   const client = new S3Client({ region: "eu-west-2" });
@@ -14,5 +15,15 @@ export const getDataFromS3 = async (event: S3Event) => {
 
   const command = new GetObjectCommand(getObjectParams);
 
-  await client.send(command);
+  const mashDataFromS3 = await client.send(command);
+
+  return await new Promise((resolve) => {
+    const formDataChunks: any[] = [];
+    (mashDataFromS3.Body as Readable).on("data", (chunk) =>
+      formDataChunks.push(chunk)
+    );
+    (mashDataFromS3.Body as Readable).on("end", () =>
+      resolve(JSON.parse(Buffer.concat(formDataChunks).toString("utf8")))
+    );
+  });
 };
