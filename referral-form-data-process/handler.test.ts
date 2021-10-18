@@ -32,4 +32,19 @@ describe("#getDataFromS3()", () => {
 
     expect(mockS3.calls()).toHaveLength(1);
   });
+
+  it("should call the S3 get object command using details from the event", async () => {
+    mockS3.on(GetObjectCommand).resolves({});
+
+    const expectedCommandInput = {
+      Bucket: "test-bucket",
+      Key: "test-object-key",
+    };
+
+    await getDataFromS3(mockS3EventNotification);
+
+    const receivedCommandInput = mockS3.calls()[0].args[0].input;
+
+    expect(receivedCommandInput).toStrictEqual(expectedCommandInput);
+  });
 });
