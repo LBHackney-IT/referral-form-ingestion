@@ -1,13 +1,13 @@
-import { S3Event } from "aws-lambda/trigger/s3";
 import { getDataFromS3 } from "./handler";
 import { mockClient } from "aws-sdk-client-mock";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
+import { S3Event, SQSEvent } from "aws-lambda";
 
 describe("#getDataFromS3()", () => {
   const mockS3 = mockClient(S3Client);
 
-  const mockS3EventNotification = {
+  const mockS3Event = {
     Records: [
       {
         s3: {
@@ -20,7 +20,15 @@ describe("#getDataFromS3()", () => {
         },
       },
     ],
-  } as unknown as S3Event;
+  } as S3Event;
+
+  const mockSQSEvent = {
+    Records: [
+      {
+        body: JSON.stringify(mockS3Event),
+      },
+    ],
+  } as SQSEvent;
 
   beforeEach(() => {
     mockS3.reset();
@@ -36,7 +44,7 @@ describe("#getDataFromS3()", () => {
       }),
     });
 
-    await getDataFromS3(mockS3EventNotification);
+    await getDataFromS3(mockSQSEvent);
 
     expect(mockS3.calls()).toHaveLength(1);
   });
@@ -56,7 +64,7 @@ describe("#getDataFromS3()", () => {
       Key: "test-object-key",
     };
 
-    await getDataFromS3(mockS3EventNotification);
+    await getDataFromS3(mockSQSEvent);
 
     const receivedCommandInput = mockS3.calls()[0].args[0].input;
 
@@ -83,8 +91,6 @@ describe("#getDataFromS3()", () => {
         }),
       });
 
-    expect(await getDataFromS3(mockS3EventNotification)).toStrictEqual([
-      mockFormData,
-    ]);
+    expect(await getDataFromS3(mockSQSEvent)).toStrictEqual([mockFormData]);
   });
 });
