@@ -27,7 +27,7 @@ describe('#authorizeAndGenerateJWT', () => {
     })
 
     it('should call to authorize our generated JWT', () => {
-        expect(mockAuthorize).toBeCalledWith();
+        expect(mockAuthorize).toBeCalled();
     })
 
     it('should return instantiated JWT object', () => {
