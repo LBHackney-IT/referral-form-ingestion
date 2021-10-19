@@ -1,14 +1,21 @@
-import { S3Event, SQSEvent } from "aws-lambda";
+import { S3EventRecord, SQSEvent } from "aws-lambda";
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 
 export const getDataFromS3 = async (sqsEvent: SQSEvent) => {
   const client = new S3Client({ region: "eu-west-2" });
+  const events: Array<S3EventRecord> = sqsEvent.Records.map(
+    (message) => JSON.parse(message.body).Records
+  ).flat();
 
-  const s3Event = JSON.parse(sqsEvent.Records[0].body) as S3Event;
+  return (
+    await Promise.all(events.map((event) => processEvent(event, client)))
+  ).flat();
+};
 
-  const objectPath = s3Event.Records[0].s3.object.key;
-  const bucketName = s3Event.Records[0].s3.bucket.name;
+export const processEvent = async (event: S3EventRecord, client: S3Client) => {
+  const objectPath = event.s3.object.key;
+  const bucketName = event.s3.bucket.name;
 
   const getObjectParams = {
     Bucket: bucketName,
@@ -16,7 +23,6 @@ export const getDataFromS3 = async (sqsEvent: SQSEvent) => {
   };
 
   const command = new GetObjectCommand(getObjectParams);
-
   const mashDataFromS3 = await client.send(command);
 
   return await new Promise((resolve) => {

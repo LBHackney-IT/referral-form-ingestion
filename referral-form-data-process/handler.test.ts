@@ -93,4 +93,45 @@ describe("#getDataFromS3()", () => {
 
     expect(await getDataFromS3(mockSQSEvent)).toStrictEqual([mockFormData]);
   });
+
+  it("should loop through multiple messages in the SQS event", async () => {
+    const secondMockS3Event = {
+      Records: [
+        {
+          s3: {
+            bucket: {
+              name: "Hello",
+            },
+            object: {
+              key: "Peace",
+            },
+          },
+        },
+      ],
+    } as S3Event;
+
+    const mockMultipleSQSMessageEvent = {
+      Records: [
+        {
+          body: JSON.stringify(mockS3Event),
+        },
+        {
+          body: JSON.stringify(secondMockS3Event),
+        },
+      ],
+    } as SQSEvent;
+
+    mockS3.on(GetObjectCommand).resolves({
+      Body: new Readable({
+        read() {
+          this.push(JSON.stringify([{}]));
+          this.push(null);
+        },
+      }),
+    });
+
+    await getDataFromS3(mockMultipleSQSMessageEvent);
+
+    expect(mockS3.calls()).toHaveLength(2);
+  });
 });
