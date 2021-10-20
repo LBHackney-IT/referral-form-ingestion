@@ -7,8 +7,8 @@ provider:
   lambdaHashingVersion: 20201221
 
 functions:
-  hello:
-    handler: handler.hello
+  getDataFromS3:
+    handler: handler.getDataFromS3
     events:
       - sqs:
           arn:
