@@ -7,7 +7,7 @@ provider:
   lambdaHashingVersion: 20201221
 
 functions:
-  getDataFromS3:
+  main:
     environment:
       CLIENTEMAIL: ${opt:CLIENTEMAIL}
       PRIVATEKEY: ${opt:PRIVATEKEY}
