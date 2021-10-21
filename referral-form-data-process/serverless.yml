@@ -8,10 +8,10 @@ provider:
 
 functions:
   getDataFromS3:
-    handler: handler.getDataFromS3
     environment:
       CLIENTEMAIL: ${opt:CLIENTEMAIL}
       PRIVATEKEY: ${opt:PRIVATEKEY}
+    handler: handler.main
     events:
       - sqs:
           arn:
