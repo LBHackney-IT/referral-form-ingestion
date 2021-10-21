@@ -72,6 +72,14 @@ The lambda which creates a new google doc and inserts it into the spreadsheet re
 
 ## Deployments
 
+
+## Environment Variables
+
+1. In CircleCI, add the following environment variables: 
+    1. CLIENT_EMAIL -- the email associated with the Google Service account
+    2. PRIVATE_KEY  -- the private key of the Google Service account
+    3. CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
+
 ### How to configure CircleCI for automated deployment of our appscript
 
 1. In your browser go to the google sheet we are looking to deploy our app script against
