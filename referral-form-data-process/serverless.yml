@@ -8,7 +8,7 @@ provider:
 
 functions:
   getDataFromS3:
-    handler: handler.getDataFromS3
+    handler: handler.main
     events:
       - sqs:
           arn:

@@ -1,3 +1,3 @@
-describe("#handler", () => {
-  it("it should do something", () => {});
+describe("#main", () => {
+  it("it should do something", () => { });
 });
