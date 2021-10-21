@@ -1,6 +1,3 @@
-
 describe("#handler", () => {
-  it("it should do something", () => {
-
-  })
-})
+  it("it should do something", () => {});
+});

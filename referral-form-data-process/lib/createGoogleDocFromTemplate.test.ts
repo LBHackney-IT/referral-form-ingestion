@@ -1,5 +1,5 @@
 import { OAuth2Client } from "google-auth-library";
-import { createDocumentFromTemplate } from "./lib";
+import { createDocumentFromTemplate } from "./createGoogleDocFromTemplate";
 import { google } from "googleapis";
 
 const mockCopy = jest.fn();
