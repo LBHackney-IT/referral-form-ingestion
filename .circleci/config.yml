@@ -163,7 +163,6 @@ workflows:
       - permit-deploy-production:
           type: approval
           requires:
-            - clasp-push
             - unit-tests-lambda
           filters:
             branches:
