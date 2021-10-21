@@ -9,7 +9,7 @@ provider:
 functions:
   getDataFromS3:
     handler: handler.getDataFromS3
-    environment: 
+    environment:
       CLIENTEMAIL: ${opt:CLIENTEMAIL}
       PRIVATEKEY: ${opt:PRIVATEKEY}
     events:
