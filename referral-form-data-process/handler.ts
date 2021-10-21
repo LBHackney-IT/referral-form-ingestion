@@ -5,18 +5,34 @@ import { getDataFromS3 } from "./lib/getDataFromS3";
 
 export const main = async (sqsEvent: SQSEvent) => {
   const auth = await generateAuth(
-    process.env.CLIENTEMAIL as string,
-    process.env.PRIVATEKEY as string
+    process.env.CLIENT_EMAIL as string,
+    process.env.PRIVATE_KEY as string
   );
-  console.log("env is: " + process.env.CLIENTEMAIL);
+
+  console.log(
+    "🚀 ~ file: handler.ts ~ line 14 ~ main ~ CLIENT_EMAIL",
+    process.env.CLIENT_EMAIL
+  );
+  console.log(
+    "🚀 ~ file: handler.ts ~ line 18 ~ main ~ PRIVATE_KEY",
+    process.env.PRIVATE_KEY
+  );
+
   const s3Data = await getDataFromS3(sqsEvent);
-  console.log("S3 response is: " + JSON.stringify(s3Data, null, 2));
-  const response = await createDocumentFromTemplate(
+  console.log("🚀 ~ file: handler.ts ~ line 22 ~ main ~ s3Data", JSON.stringify(s3Data, null, 2))
+  
+  const createdDocument = await createDocumentFromTemplate(
     auth,
     "1btL-4GSst9OxFxKCAHueX_kOr1M53YmwbvgV8JxsqIo",
     "test",
     s3Data as any
   );
 
-  return response;
+  console.log("🚀 ~ file: handler.ts ~ line 30 ~ main ~ createdDocument", createdDocument)
+
+  // update spreadsheet
+
+  // call to API
+
+  return "completed";
 };
