@@ -9,8 +9,8 @@ provider:
 functions:
   main:
     environment:
-      CLIENT_EMAIL: ${opt:CLIENTEMAIL}
-      PRIVATE_KEY: ${opt:PRIVATEKEY}
+      CLIENT_EMAIL: ${opt:CLIENT_EMAIL}
+      PRIVATE_KEY: ${opt:PRIVATE_KEY}
     handler: handler.main
     events:
       - sqs:
