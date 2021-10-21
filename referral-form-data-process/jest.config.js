@@ -6,5 +6,5 @@ module.exports = {
 
 process.env = Object.assign(process.env, {
   CLIENT_EMAIL: "test-client-email",
-  PRIVATE_KEY: "test-private-key"
-})
+  PRIVATE_KEY: "test-private-key",
+});

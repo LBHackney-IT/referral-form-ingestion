@@ -19,8 +19,11 @@ export const main = async (sqsEvent: SQSEvent) => {
   );
 
   const s3Data = await getDataFromS3(sqsEvent);
-  console.log("🚀 ~ file: handler.ts ~ line 22 ~ main ~ s3Data", JSON.stringify(s3Data, null, 2))
-  
+  console.log(
+    "🚀 ~ file: handler.ts ~ line 22 ~ main ~ s3Data",
+    JSON.stringify(s3Data, null, 2)
+  );
+
   const createdDocument = await createDocumentFromTemplate(
     auth,
     "1btL-4GSst9OxFxKCAHueX_kOr1M53YmwbvgV8JxsqIo",
@@ -28,7 +31,10 @@ export const main = async (sqsEvent: SQSEvent) => {
     s3Data as any
   );
 
-  console.log("🚀 ~ file: handler.ts ~ line 30 ~ main ~ createdDocument", JSON.stringify(createdDocument, null, 2))
+  console.log(
+    "🚀 ~ file: handler.ts ~ line 30 ~ main ~ createdDocument",
+    JSON.stringify(createdDocument, null, 2)
+  );
 
   // update spreadsheet
 
