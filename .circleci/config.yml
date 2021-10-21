@@ -124,7 +124,7 @@ jobs:
           command: yarn lint
       - run:
           name: Run tests
-          command: yarn test --runInBand --debug
+          command: yarn test
     environment:
       TZ: "Europe/London"
 
