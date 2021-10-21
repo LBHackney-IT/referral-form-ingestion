@@ -1,4 +1,4 @@
-import { generateAuth } from "./auth";
+import { generateAuth } from "./generateGoogleAuth";
 import { google } from "googleapis";
 import { JWT } from "google-auth-library";
 
