@@ -28,7 +28,7 @@ export const main = async (sqsEvent: SQSEvent) => {
     s3Data as any
   );
 
-  console.log("🚀 ~ file: handler.ts ~ line 30 ~ main ~ createdDocument", createdDocument)
+  console.log("🚀 ~ file: handler.ts ~ line 30 ~ main ~ createdDocument", JSON.stringify(createdDocument, null, 2))
 
   // update spreadsheet
 
