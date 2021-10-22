@@ -135,7 +135,7 @@ jobs:
       - *attach_workspace
       - run:
           name: "deploy"
-          command: "sudo npm i -g serverless && sls deploy -s mosaic-prod --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY"
+          command: "sudo npm i -g serverless && sls deploy -s mosaic-prod --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --SPREADSHEET_ID $SPREADSHEET_ID --URL_COLUMN $URL_COLUMN"
 
 workflows:
   version: 2
