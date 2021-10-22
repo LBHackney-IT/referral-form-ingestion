@@ -11,6 +11,9 @@ functions:
     environment:
       CLIENT_EMAIL: ${opt:CLIENT_EMAIL}
       PRIVATE_KEY: ${opt:PRIVATE_KEY}
+      TEMPLATE_DOCUMENT_ID: ${opt:TEMPLATE_DOCUMENT_ID}
+      SPREADSHEET_ID: ${opt:SPREADSHEET_ID}
+      URL_COLUMN: ${opt:URL_COLUMN}
     handler: handler.main
     events:
       - sqs:

@@ -15,6 +15,7 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
     - [Brainstorming the new process design](#brainstorming-the-new-process-design)
     - [Google Authentication](#google-authentication)
   - [Deployments](#deployments)
+  - [Environment Variables](#environment-variables)
     - [How to configure CircleCI for automated deployment of our appscript](#how-to-configure-circleci-for-automated-deployment-of-our-appscript)
   - [Troubleshooting](#troubleshooting)
     - [Clasp push suddenly stops working](#clasp-push-suddenly-stops-working)
@@ -75,10 +76,13 @@ The lambda which creates a new google doc and inserts it into the spreadsheet re
 
 ## Environment Variables
 
-1. In CircleCI, add the following environment variables: 
-    1. CLIENT_EMAIL -- the email associated with the Google Service account
-    2. PRIVATE_KEY  -- the private key of the Google Service account
-    3. CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
+In CircleCI, add the following environment variables: 
+ 1. CLIENT_EMAIL: Email associated with the Google Service account
+ 2. PRIVATE_KEY: Private key of the Google Service account
+ 3. SPREADSHEET_ID: Id of google spreadsheet that we update
+ 4. TEMPLATE_DOCUMENT_ID: Id of google doc we use as a template for creating new documents
+ 5. URL_COLUMN: Column that contains the URLs to to created google documents
+ 6. CLASP_REFRESH_TOKEN: Refresh token to authenticate Clasp with Google
 
 ### How to configure CircleCI for automated deployment of our appscript
 
