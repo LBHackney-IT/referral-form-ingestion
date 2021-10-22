@@ -3,10 +3,12 @@ import { main } from "./handler";
 import { generateAuth } from "./lib/generateGoogleAuth";
 import { getDataFromS3 } from "./lib/getDataFromS3";
 import { createDocumentFromTemplate } from "./lib/createGoogleDocFromTemplate";
+import { addGoogleDocUrlToSheet } from "./lib/addGoogleDocUrlToSheet";
 
 jest.mock("./lib/generateGoogleAuth");
 jest.mock("./lib/getDataFromS3");
 jest.mock("./lib/createGoogleDocFromTemplate");
+jest.mock("./lib/addGoogleDocUrlToSheet");
 
 describe("#main", () => {
   const mockSQSEvent = {
@@ -15,6 +17,12 @@ describe("#main", () => {
 
   const mockGenerateAuthResponse = "mock-generate-auth-response";
   const mockGetDataFromS3Response = "mock-get-data-from-s3-response";
+  const testDocumentId = "test-document-id";
+
+  beforeAll(() => {
+    jest.useFakeTimers('modern');
+    jest.setSystemTime(new Date(2020, 3, 1, 14, 50, 20));
+  })
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -25,6 +33,9 @@ describe("#main", () => {
     (getDataFromS3 as jest.Mock).mockImplementation(
       () => mockGetDataFromS3Response
     );
+    (createDocumentFromTemplate as jest.Mock).mockImplementation(() => ({
+      documentId: "testDocumentId",
+    }));
   });
 
   it("it should call to generate an auth token with our client email and private key", async () => {
@@ -47,9 +58,20 @@ describe("#main", () => {
 
     expect(createDocumentFromTemplate).toBeCalledWith(
       mockGenerateAuthResponse,
-      "1btL-4GSst9OxFxKCAHueX_kOr1M53YmwbvgV8JxsqIo",
-      "test",
+      "test-template-document-id",
+      "Test - 2020-04-01T13:50:20.000Z",
       mockGetDataFromS3Response
+    );
+  });
+
+  it("should call to add the created document url to a google sheet", async () => {
+    await main(mockSQSEvent);
+
+    expect(addGoogleDocUrlToSheet).toBeCalledWith(
+      mockGenerateAuthResponse,
+      "https://docs.google.com/spreadsheets/d/testDocumentId/edit",
+      "test-url-column",
+      "1"
     );
   });
 });
