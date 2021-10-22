@@ -20,9 +20,9 @@ describe("#main", () => {
   const testDocumentId = "test-document-id";
 
   beforeAll(() => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers("modern");
     jest.setSystemTime(new Date(2020, 3, 1, 14, 50, 20));
-  })
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

@@ -158,13 +158,13 @@ describe.only("#addGoogleDocUrlToSheet", () => {
     );
 
     expect(mockUpdate).toBeCalledWith({
+      range: `${testColumnUrl}${testTableRow}`,
+      requestBody: {
         range: `${testColumnUrl}${testTableRow}`,
-        requestBody: {
-            range: `${testColumnUrl}${testTableRow}`,
-            values: [["test-document-url"]]
-        },
-        spreadsheetId: testSpreadsheetId,
-        valueInputOption: "USER_ENTERED",
+        values: [["test-document-url"]],
+      },
+      spreadsheetId: testSpreadsheetId,
+      valueInputOption: "USER_ENTERED",
     });
   });
 });

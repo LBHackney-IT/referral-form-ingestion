@@ -11,7 +11,7 @@ export const main = async (sqsEvent: SQSEvent) => {
   );
 
   const s3Data = await getDataFromS3(sqsEvent);
-  
+
   const createdDocument = await createDocumentFromTemplate(
     auth,
     process.env.TEMPLATE_DOCUMENT_ID as string,
@@ -19,8 +19,8 @@ export const main = async (sqsEvent: SQSEvent) => {
     s3Data as any
   );
 
-  const documentUrl = `https://docs.google.com/spreadsheets/d/${createdDocument.documentId}/edit`
-  
+  const documentUrl = `https://docs.google.com/spreadsheets/d/${createdDocument.documentId}/edit`;
+
   const urlColumn = process.env.URL_COLUMN as string;
 
   await addGoogleDocUrlToSheet(auth, documentUrl, urlColumn, "1");
