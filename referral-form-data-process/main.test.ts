@@ -21,6 +21,12 @@ describe("#handler", () => {
     },
   ];
 
+  process.env.CLIENTEMAIL = "test-email";
+  process.env.PRIVATEKEY = "1234";
+
+  process.env.TEMPLATEDOCUMENTID = "0001111";
+  process.env.TITLE = "A google document";
+
   const googleAuthToken = { test: "this is a test token" } as unknown as JWT;
 
   beforeEach(() => {
@@ -46,18 +52,12 @@ describe("#handler", () => {
   });
 
   it("it should call #generateAuth when it receives an SQS event", async () => {
-    process.env.CLIENTEMAIL = "test-email";
-    process.env.PRIVATEKEY = "1234";
-
     await handler(sqsTriggerEvent);
 
     expect(generateAuth).toHaveBeenCalledWith("test-email", "1234");
   });
 
   it("it should call #createDocumentFromTemplate when a token has been generated and form data retrieved", async () => {
-    process.env.TEMPLATEDOCUMENTID = "0001111";
-    process.env.TITLE = "A google document";
-
     await handler(sqsTriggerEvent);
 
     expect(createDocumentFromTemplate).toHaveBeenCalledWith(
@@ -67,6 +67,47 @@ describe("#handler", () => {
       {
         data: ["This is a test"],
         id: ["100"],
+      }
+    );
+  });
+
+  it("it should call loop through all retrieved objects and create a google document for each", async () => {
+    const multipleObjectArray = [
+      {
+        data: ["This is one"],
+        id: ["1"],
+      },
+      {
+        name: ["This is another"],
+        id: ["10"],
+      },
+    ];
+
+    (getDataFromS3 as jest.Mock).mockImplementation(() => {
+      return multipleObjectArray;
+    });
+
+    await handler(sqsTriggerEvent);
+
+    expect(createDocumentFromTemplate).toHaveBeenNthCalledWith(
+      1,
+      googleAuthToken,
+      "0001111",
+      "A google document",
+      {
+        data: ["This is one"],
+        id: ["1"],
+      }
+    );
+
+    expect(createDocumentFromTemplate).toHaveBeenNthCalledWith(
+      2,
+      googleAuthToken,
+      "0001111",
+      "A google document",
+      {
+        name: ["This is another"],
+        id: ["10"],
       }
     );
   });

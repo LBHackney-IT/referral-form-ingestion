@@ -13,10 +13,13 @@ export const handler = async (sqsEvent: SQSEvent) => {
 
   const googleAuthToken = await generateAuth(clientEmail, privateKey);
 
-  const documentSchema = await createDocumentFromTemplate(
-    googleAuthToken,
-    templateDocumentId,
-    title,
-    formDataObjects[0]
+  formDataObjects.forEach(
+    async (formData) =>
+      await createDocumentFromTemplate(
+        googleAuthToken,
+        templateDocumentId,
+        title,
+        formData
+      )
   );
 };
