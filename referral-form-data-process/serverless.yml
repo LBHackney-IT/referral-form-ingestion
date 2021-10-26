@@ -5,6 +5,18 @@ provider:
   runtime: nodejs14.x
   region: eu-west-2
   lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:GetObject"
+          Resource:
+            Fn::Join:
+              - ""
+              - - "arn:aws:s3:::"
+                - "social-care-referrals-bucket"
+                - "/*"
 
 functions:
   main:
