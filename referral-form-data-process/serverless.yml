@@ -23,7 +23,7 @@ functions:
     environment:
       CLIENTEMAIL: ${opt:CLIENTEMAIL}
       PRIVATEKEY: ${opt:PRIVATEKEY}
-    handler: handler.main
+    handler: referral-form-data-process/main.handler
     events:
       - sqs:
           arn:
