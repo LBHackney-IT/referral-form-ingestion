@@ -5,7 +5,7 @@ export const createDocumentFromTemplate = async (
   auth: OAuth2Client,
   templateDocumentId: string,
   title: string,
-  inputData: Record<string, string | number>
+  inputData: Record<string, string[]>
 ) => {
   const drive = google.drive({ version: "v3", auth });
   const docs = google.docs({
@@ -55,9 +55,7 @@ interface UpdateRequest {
   };
 }
 
-function generateBatchUpdateRequests(
-  inputData: Record<string, string | number>
-) {
+function generateBatchUpdateRequests(inputData: Record<string, string[]>) {
   const batchUpdateRequests: UpdateRequest[] = [];
 
   const inputDataEntries = Object.entries(inputData);
