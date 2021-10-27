@@ -14,18 +14,28 @@ describe("#handler", () => {
     Records: [{}],
   } as SQSEvent;
 
-  const s3ObjectArray = [
+  const singleS3ObjectArray = [
     {
       data: ["This is a test"],
       id: ["100"],
     },
   ];
 
-  process.env.CLIENTEMAIL = "test-email";
-  process.env.PRIVATEKEY = "1234";
+  const multipleS3ObjectArray = [
+    {
+      data: ["This is one"],
+      id: ["1"],
+    },
+    {
+      name: ["This is another"],
+      id: ["10"],
+    },
+  ];
 
-  process.env.TEMPLATEDOCUMENTID = "0001111";
-  process.env.TITLE = "A google document";
+  const testEmail = "test@email.com";
+  const testKey = "1234";
+  const testTemplateId = "0001111";
+  const testTitle = "A google document";
 
   const googleAuthToken = { test: "this is a test token" } as unknown as JWT;
 
@@ -33,7 +43,7 @@ describe("#handler", () => {
     jest.resetAllMocks();
 
     (getDataFromS3 as jest.Mock).mockImplementation(() => {
-      return s3ObjectArray;
+      return singleS3ObjectArray;
     });
 
     (generateAuth as jest.Mock).mockImplementation(() => {
@@ -43,6 +53,11 @@ describe("#handler", () => {
     (createDocumentFromTemplate as jest.Mock).mockImplementation(() => {
       return {};
     });
+
+    process.env.CLIENTEMAIL = testEmail;
+    process.env.PRIVATEKEY = testKey;
+    process.env.TEMPLATEDOCUMENTID = testTemplateId;
+    process.env.TITLE = testTitle;
   });
 
   it("it should call #getDataFromS3 when it receives an SQS event", async () => {
@@ -54,7 +69,7 @@ describe("#handler", () => {
   it("it should call #generateAuth when it receives an SQS event", async () => {
     await handler(sqsTriggerEvent);
 
-    expect(generateAuth).toHaveBeenCalledWith("test-email", "1234");
+    expect(generateAuth).toHaveBeenCalledWith(testEmail, testKey);
   });
 
   it("it should call #createDocumentFromTemplate when a token has been generated and form data retrieved", async () => {
@@ -62,29 +77,15 @@ describe("#handler", () => {
 
     expect(createDocumentFromTemplate).toHaveBeenCalledWith(
       googleAuthToken,
-      "0001111",
-      "A google document",
-      {
-        data: ["This is a test"],
-        id: ["100"],
-      }
+      testTemplateId,
+      testTitle,
+      singleS3ObjectArray[0]
     );
   });
 
   it("it should call loop through all retrieved objects and create a google document for each", async () => {
-    const multipleObjectArray = [
-      {
-        data: ["This is one"],
-        id: ["1"],
-      },
-      {
-        name: ["This is another"],
-        id: ["10"],
-      },
-    ];
-
     (getDataFromS3 as jest.Mock).mockImplementation(() => {
-      return multipleObjectArray;
+      return multipleS3ObjectArray;
     });
 
     await handler(sqsTriggerEvent);
@@ -92,23 +93,17 @@ describe("#handler", () => {
     expect(createDocumentFromTemplate).toHaveBeenNthCalledWith(
       1,
       googleAuthToken,
-      "0001111",
-      "A google document",
-      {
-        data: ["This is one"],
-        id: ["1"],
-      }
+      testTemplateId,
+      testTitle,
+      multipleS3ObjectArray[0]
     );
 
     expect(createDocumentFromTemplate).toHaveBeenNthCalledWith(
       2,
       googleAuthToken,
-      "0001111",
-      "A google document",
-      {
-        name: ["This is another"],
-        id: ["10"],
-      }
+      testTemplateId,
+      testTitle,
+      multipleS3ObjectArray[1]
     );
   });
 });
