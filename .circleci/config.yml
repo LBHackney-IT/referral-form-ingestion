@@ -128,14 +128,23 @@ jobs:
     environment:
       TZ: "Europe/London"
 
-  deploy-lambda:
-    executor: aws-cli/default
+  compile-lambda:
+    executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - run:
           name: Compile Lambda
           command: yarn tsc main.ts
+      - persist_to_workspace:
+          root: *workspace_root
+          paths: .
+
+  deploy-lambda:
+    executor: aws-cli/default
+    working_directory: ~/project/referral-form-data-process
+    steps:
+      - *attach_workspace
       - run:
           name: "deploy"
           command: "sudo npm i -g serverless && sls deploy -s mosaic-prod --CLIENTEMAIL $CLIENT_EMAIL --PRIVATEKEY $PRIVATE_KEY"
@@ -177,9 +186,15 @@ workflows:
           filters:
             branches:
               only: main
-      - deploy-lambda:
+      - compile-lambda:
           requires:
             - assume-role-mosaic-production
+          filters:
+            branches:
+              only: main
+      - deploy-lambda:
+          requires:
+            - compile-lambda
           filters:
             branches:
               only: main
