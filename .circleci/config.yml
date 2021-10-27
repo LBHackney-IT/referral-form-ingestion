@@ -124,7 +124,7 @@ jobs:
           command: yarn lint
       - run:
           name: Run tests
-          command: yarn test
+          command: yarn test --runInBand
     environment:
       TZ: "Europe/London"
 
@@ -133,6 +133,9 @@ jobs:
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
+      - run:
+          name: Compile Lambda
+          command: yarn tsc main.ts
       - run:
           name: "deploy"
           command: "sudo npm i -g serverless && sls deploy -s mosaic-prod --CLIENTEMAIL $CLIENT_EMAIL --PRIVATEKEY $PRIVATE_KEY"
