@@ -38,7 +38,7 @@ describe("#createDocumentFromTemplate", () => {
   const newDocumentTitle = "test-new-document-title";
   const originalTemplateId = "1";
   const copyOfOriginalTemplateId = "2";
-  const testInputData = { testKey: "testValue" };
+  const testInputData = { testKey: ["testValue"] };
 
   beforeEach(() => {
     mockCopy.mockReset();
@@ -291,7 +291,7 @@ describe("#createDocumentFromTemplate", () => {
   });
 
   it("should provide an empty array if no value is provided for an associated key", async () => {
-    const inputData = { testKey: "" };
+    const inputData = { testKey: [""] };
     await createDocumentFromTemplate(
       mockAuth,
       testTemplateDocumentId,

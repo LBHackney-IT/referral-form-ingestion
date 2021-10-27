@@ -25,7 +25,7 @@ export const processEvent = async (event: S3EventRecord, client: S3Client) => {
   const command = new GetObjectCommand(getObjectParams);
   const mashDataFromS3 = await client.send(command);
 
-  return await new Promise((resolve) => {
+  return (await new Promise((resolve) => {
     const formDataChunks: any[] = [];
     (mashDataFromS3.Body as Readable).on("data", (chunk) =>
       formDataChunks.push(chunk)
@@ -33,5 +33,5 @@ export const processEvent = async (event: S3EventRecord, client: S3Client) => {
     (mashDataFromS3.Body as Readable).on("end", () =>
       resolve(JSON.parse(Buffer.concat(formDataChunks).toString("utf8")))
     );
-  });
+  })) as Record<string, string[]>;
 };
