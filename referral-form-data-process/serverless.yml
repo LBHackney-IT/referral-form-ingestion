@@ -5,6 +5,7 @@ provider:
   runtime: nodejs14.x
   region: eu-west-2
   lambdaHashingVersion: 20201221
+  timeout: 30
   iam:
     role:
       statements:
@@ -23,6 +24,8 @@ functions:
     environment:
       CLIENTEMAIL: ${opt:CLIENTEMAIL}
       PRIVATEKEY: ${opt:PRIVATEKEY}
+      TEMPLATEDOCUMENTID: ${opt:TEMPLATEDOCUMENTID}
+      TITLE: ${opt:TITLE}
     handler: referral-form-data-process/main.handler
     events:
       - sqs:
