@@ -54,9 +54,9 @@ describe("#handler", () => {
       return {};
     });
 
-    process.env.CLIENTEMAIL = testEmail;
-    process.env.PRIVATEKEY = testKey;
-    process.env.TEMPLATEDOCUMENTID = testTemplateId;
+    process.env.CLIENT_EMAIL = testEmail;
+    process.env.PRIVATE_KEY = testKey;
+    process.env.TEMPLATE_DOCUMENT_ID = testTemplateId;
     process.env.TITLE = testTitle;
   });
 

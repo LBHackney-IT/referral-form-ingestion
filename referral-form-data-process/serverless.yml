@@ -22,9 +22,9 @@ provider:
 functions:
   main:
     environment:
-      CLIENTEMAIL: ${opt:CLIENTEMAIL}
-      PRIVATEKEY: ${opt:PRIVATEKEY}
-      TEMPLATEDOCUMENTID: ${opt:TEMPLATEDOCUMENTID}
+      CLIENT_EMAIL: ${opt:CLIENT_EMAIL}
+      PRIVATE_KEY: ${opt:PRIVATE_KEY}
+      TEMPLATE_DOCUMENT_ID: ${opt:TEMPLATE_DOCUMENT_ID}
       TITLE: ${opt:TITLE}
     handler: referral-form-data-process/main.handler
     events:
