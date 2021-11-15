@@ -14,17 +14,13 @@ export const handler = async (sqsEvent: SQSEvent) => {
   const googleAuthToken = await generateAuth(clientEmail, formattedPrivateKey);
 
   await Promise.all(
-    formDataObjects.map(async (formData) => {
-      await new Promise((resolve) => {
-        resolve(
-          createDocumentFromTemplate(
-            googleAuthToken,
-            templateDocumentId,
-            title,
-            formData
-          )
-        );
-      });
-    })
+    formDataObjects.map((formData) =>
+      createDocumentFromTemplate(
+        googleAuthToken,
+        templateDocumentId,
+        title,
+        formData
+      )
+    )
   );
 };
