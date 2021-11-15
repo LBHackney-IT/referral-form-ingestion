@@ -141,7 +141,7 @@ jobs:
           paths: .
 
   deploy-lambda:
-    executor: aws-cli/default
+    executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
