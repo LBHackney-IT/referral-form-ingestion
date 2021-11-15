@@ -5,7 +5,8 @@
   "scripts": {
     "test": "jest",
     "lint": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "deploy": "sls deploy"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.84",
