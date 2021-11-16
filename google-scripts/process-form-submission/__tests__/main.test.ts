@@ -19,7 +19,7 @@ describe("#onFormSubmit()", () => {
   const mockEvent = {
     namedValues: mockFormData,
     range: {
-      getRow() { },
+      getRow() {},
     } as unknown as GoogleAppsScript.Spreadsheet.Range,
   } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 

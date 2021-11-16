@@ -19,7 +19,7 @@ describe("#setUniqueIdOnSubmission", () => {
     mockEvent = {
       namedValues: mockFormData,
       range: {
-        getRow() { },
+        getRow() {},
       } as unknown as GoogleAppsScript.Spreadsheet.Range,
     } as unknown as GoogleAppsScript.Events.SheetsOnFormSubmit;
 
@@ -39,8 +39,6 @@ describe("#setUniqueIdOnSubmission", () => {
     ).mockImplementation(() => {
       return MockSpreadsheetApp.mockActiveRange;
     });
-
-
   });
 
   it("should return the id for the newly added submission", () => {
@@ -48,8 +46,7 @@ describe("#setUniqueIdOnSubmission", () => {
     const previousFormId = 1;
 
     (
-      MockSpreadsheetApp.mockActiveRange
-        .getRow as jest.Mock<number>
+      MockSpreadsheetApp.mockActiveRange.getRow as jest.Mock<number>
     ).mockImplementation(() => {
       return currentRowIndex;
     });
