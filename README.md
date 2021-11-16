@@ -15,6 +15,7 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
     - [Brainstorming the new process design](#brainstorming-the-new-process-design)
     - [Google Authentication](#google-authentication)
   - [Deployments](#deployments)
+  - [Environment Variables](#environment-variables)
     - [How to configure CircleCI for automated deployment of our appscript](#how-to-configure-circleci-for-automated-deployment-of-our-appscript)
   - [Troubleshooting](#troubleshooting)
     - [Clasp push suddenly stops working](#clasp-push-suddenly-stops-working)
@@ -79,6 +80,10 @@ The lambda which creates a new google doc and inserts it into the spreadsheet re
     1. CLIENT_EMAIL -- the email associated with the Google Service account
     2. PRIVATE_KEY  -- the private key of the Google Service account
     3. CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
+    4. SPREADSHEET_ID -- the id of google spreadsheet that we update
+    5. TEMPLATE_DOCUMENT_ID -- the id of google doc we use as a template for creating new documents
+    6. URL_COLUMN -- column that contains the URLs to to created google documents
+    7. TITLE -- title of the document
 
 ### How to configure CircleCI for automated deployment of our appscript
 
