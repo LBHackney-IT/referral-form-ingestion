@@ -2,7 +2,7 @@ export function setUniqueIdOnSubmission(
   activeSheet: GoogleAppsScript.Spreadsheet.Sheet | null,
   idColumn: string,
   event: GoogleAppsScript.Events.SheetsOnFormSubmit
-): number {
+): Record<string, number> {
   if (!activeSheet) {
     throw new Error("Sheet by name method returned null or undefined");
   }
@@ -25,5 +25,5 @@ export function setUniqueIdOnSubmission(
   );
   currentFormIdCell.setValue(currentSubmissionUniqueId);
 
-  return currentSubmissionUniqueId;
+  return { id: currentSubmissionUniqueId, row: currentFormIdCell.getRow() };
 }
