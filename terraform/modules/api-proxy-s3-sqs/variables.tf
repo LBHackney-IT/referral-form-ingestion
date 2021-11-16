@@ -1,11 +1,6 @@
-variable "api_gateway_account_name_prefix" {
+variable "project_name" {
   type        = string
-  description = "Prefix used to describe the gateway account"
-}
-
-variable "rest_api_s3_proxy_name" {
-  type        = string
-  description = "Name of the REST API acting as the S3 proxy"
+  description = "Name that will be used as prefix for names of the REST API, S3 bucket and SQS queues"
 }
 
 variable "environment" {
@@ -18,14 +13,4 @@ variable "core_region" {
   default = "eu-west-2"
 
   description = "The AWS region the resources will be deployed into."
-}
-
-variable "bucket_name" {
-  type        = string
-  description = "Name of bucket that connects with REST API"
-}
-
-variable "queue_name_prefix" {
-  type        = string
-  description = "Prefix used to describe of main queue and dead letter queues"
 }

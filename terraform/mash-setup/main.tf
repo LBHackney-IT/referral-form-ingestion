@@ -15,9 +15,6 @@ terraform {
 module "mash_data_processing" {
   source = "../modules/api-proxy-s3-sqs"
 
-  api_gateway_account_name_prefix = "social-care-api-gateway"
-  rest_api_s3_proxy_name          = "social-care-referrals-s3-api"
-  bucket_name                     = "social-care-referrals-bucket"
-  queue_name_prefix               = "social-care-referrals"
+  project_name                    = "social-care-referrals"
   environment                     = "stg"
 }

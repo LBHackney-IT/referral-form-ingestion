@@ -1,5 +1,5 @@
 resource "aws_iam_role" "social_care_api_cloudwatch" {
-  name               = "${var.api_gateway_account_name_prefix}-cloudwatch-global"
+  name               = "${var.project_name}-api-gateway-cloudwatch-global"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -18,7 +18,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "social_care_api_cloudwatch" {
-  name = "${var.api_gateway_account_name_prefix}-cloudwatch-global-default"
+  name = "${var.project_name}-api-gateway-cloudwatch-global-default"
   role = aws_iam_role.social_care_api_cloudwatch.id
 
   policy = <<EOF
@@ -44,7 +44,7 @@ EOF
 }
 
 resource "aws_iam_policy" "api_gateway_integration_s3_policy" {
-  name        = "${var.rest_api_s3_proxy_name}-integration"
+  name        = "${var.project_name}-s3-api-integration"
   description = "Policy for allowing s3 and Logging"
 
   policy = jsonencode({
@@ -79,7 +79,7 @@ resource "aws_iam_policy" "api_gateway_integration_s3_policy" {
 }
 
 resource "aws_iam_role" "api_gateway_integration_s3_role" {
-  name = "${var.rest_api_s3_proxy_name}-integration-role"
+  name = "${var.project_name}-s3-api-integration-role"
 
   assume_role_policy = <<EOF
 {
