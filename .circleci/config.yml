@@ -161,25 +161,34 @@ jobs:
     environment:
       TZ: "Europe/London"
 
-  compile-lambda:
+  deploy-lambda-to-staging:
     executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - run:
-          name: Compile Lambda
+          name: Compile lambda
           command: yarn tsc main.ts
       - persist_to_workspace:
           root: *workspace_root
           paths: .
+      - run:
+          name: "deploy"
+          command: "yarn deploy -s staging --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --TITLE $TITLE"
 
-  deploy-lambda:
+  deploy-lambda-to-mosaic-prod:
     executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - run:
-          name: "deploy"
+          name: Compile lambda
+          command: yarn tsc main.ts
+      - persist_to_workspace:
+          root: *workspace_root
+          paths: .
+      - run:
+          name: "deploy lambda"
           command: "yarn deploy -s mosaic-prod --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --TITLE $TITLE"
 
 workflows:
@@ -199,10 +208,16 @@ workflows:
           filters:
             branches:
               only: main
+      - install-dependencies-lambda:
+          requires:
+            - checkout
+      - unit-tests-lambda:
+          requires:
+            - install-dependencies-lambda
       - assume-role-staging:
           context: api-assume-role-staging-context
           requires:
-            - checkout
+            - unit-tests-lambda
           filters:
             branches:
               only: main
@@ -212,16 +227,16 @@ workflows:
           filters:
             branches:
               only: main
-      - install-dependencies-lambda:
+      - deploy-lambda-to-staging:
           requires:
-            - checkout
-      - unit-tests-lambda:
-          requires:
-            - install-dependencies-lambda
+            - terraform-init-then-apply-to-staging
+          filters:
+            branches:
+              only: main
       - permit-deploy-production:
           type: approval
           requires:
-            - unit-tests-lambda
+            - deploy-lambda-to-staging
           filters:
             branches:
               only: main
@@ -232,15 +247,9 @@ workflows:
           filters:
             branches:
               only: main
-      - compile-lambda:
+      - deploy-lambda-to-mosaic-prod:
           requires:
             - assume-role-mosaic-production
-          filters:
-            branches:
-              only: main
-      - deploy-lambda:
-          requires:
-            - compile-lambda
           filters:
             branches:
               only: main
