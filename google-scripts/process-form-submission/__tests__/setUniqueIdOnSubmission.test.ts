@@ -41,7 +41,7 @@ describe("#setUniqueIdOnSubmission", () => {
     });
   });
 
-  it("should return the id for the newly added submission", () => {
+  it("should return an object containing the id and spreadsheet row for the newly added submission", () => {
     const currentRowIndex = 7;
     const previousFormId = 1;
 

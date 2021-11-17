@@ -111,13 +111,13 @@ describe("#onFormSubmit()", () => {
     );
   });
 
-  it("should send the form data with its ID to AWS for further processing", () => {
+  it("should send the form data with its ID & spreadsheet row to AWS for further processing", () => {
     const submissionId = "1";
-    const formRow = "1";
+    const rowPosition = "1";
 
     const formDataWithId = mockEvent.namedValues;
     formDataWithId.FormSubmissionId = [submissionId];
-    formDataWithId.FormRow = [formRow];
+    formDataWithId.SubmissionRowPosition = [rowPosition];
 
     const options = {
       method: "put",
