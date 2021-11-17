@@ -23,7 +23,7 @@ export const handler = async (sqsEvent: SQSEvent) => {
         title,
         formData
       );
-      const documentUrl = `https://docs.google.com/spreadsheets/d/${createdDocument.documentId}/edit`;
+      const documentUrl = `https://docs.google.com/document/d/${createdDocument.documentId}/edit`;
       await addGoogleDocUrlToSheet(
         googleAuthToken,
         documentUrl,
