@@ -1,6 +1,7 @@
 import { SQSEvent } from "aws-lambda/trigger/sqs";
 import { JWT } from "google-auth-library";
 import { createDocumentFromTemplate } from "./lib/createGoogleDocFromTemplate";
+import { addGoogleDocUrlToSheet } from "./lib/addGoogleDocUrlToSheet";
 import { generateAuth } from "./lib/generateGoogleAuth";
 import { getDataFromS3 } from "./lib/getDataFromS3";
 import { handler } from "./main";
@@ -8,6 +9,7 @@ import { handler } from "./main";
 jest.mock("./lib/getDataFromS3");
 jest.mock("./lib/generateGoogleAuth");
 jest.mock("./lib/createGoogleDocFromTemplate");
+jest.mock("./lib/addGoogleDocUrlToSheet");
 
 describe("#handler", () => {
   const sqsTriggerEvent = {
@@ -18,6 +20,7 @@ describe("#handler", () => {
     {
       data: ["This is a test"],
       id: ["100"],
+      FormRow: ["1"],
     },
   ];
 
@@ -25,10 +28,12 @@ describe("#handler", () => {
     {
       data: ["This is one"],
       id: ["1"],
+      FormRow: ["2"],
     },
     {
       name: ["This is another"],
       id: ["10"],
+      FormRow: ["3"],
     },
   ];
 
@@ -36,6 +41,8 @@ describe("#handler", () => {
   const testKey = "1234";
   const testTemplateId = "0001111";
   const testTitle = "A google document";
+  const urlColumn = "1";
+  const documentId = "12345";
 
   const googleAuthToken = { test: "this is a test token" } as unknown as JWT;
 
@@ -51,6 +58,10 @@ describe("#handler", () => {
     });
 
     (createDocumentFromTemplate as jest.Mock).mockImplementation(() => {
+      return { documentId: documentId };
+    });
+
+    (addGoogleDocUrlToSheet as jest.Mock).mockImplementation(() => {
       return {};
     });
 
@@ -58,6 +69,7 @@ describe("#handler", () => {
     process.env.PRIVATE_KEY = testKey;
     process.env.TEMPLATE_DOCUMENT_ID = testTemplateId;
     process.env.TITLE = testTitle;
+    process.env.URL_COLUMN = urlColumn;
   });
 
   it("it should call #getDataFromS3 when it receives an SQS event", async () => {
@@ -104,6 +116,18 @@ describe("#handler", () => {
       testTemplateId,
       testTitle,
       multipleS3ObjectArray[1]
+    );
+  });
+
+  it("should call to add the created document url to a google sheet", async () => {
+    const documentUrl = `https://docs.google.com/document/d/${documentId}/edit`;
+    await handler(sqsTriggerEvent);
+
+    expect(addGoogleDocUrlToSheet).toBeCalledWith(
+      googleAuthToken,
+      documentUrl,
+      urlColumn,
+      singleS3ObjectArray[0].FormRow.toString()
     );
   });
 });

@@ -25,6 +25,8 @@ functions:
       PRIVATE_KEY: ${opt:PRIVATE_KEY}
       TEMPLATE_DOCUMENT_ID: ${opt:TEMPLATE_DOCUMENT_ID}
       TITLE: ${opt:TITLE}
+      URL_COLUMN: ${opt:URL_COLUMN}
+      SPREADSHEET_ID: ${opt:SPREADSHEET_ID}
     handler: referral-form-data-process/main.handler
     events:
       - sqs:

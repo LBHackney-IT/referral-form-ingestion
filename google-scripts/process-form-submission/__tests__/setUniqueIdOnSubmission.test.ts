@@ -41,9 +41,15 @@ describe("#setUniqueIdOnSubmission", () => {
     });
   });
 
-  it("should return the id for the newly added submission", () => {
+  it("should return an object containing the id and spreadsheet row for the newly added submission", () => {
     const currentRowIndex = 7;
     const previousFormId = 1;
+
+    (
+      MockSpreadsheetApp.mockActiveRange.getRow as jest.Mock<number>
+    ).mockImplementation(() => {
+      return currentRowIndex;
+    });
 
     mockEvent = {
       range: {
@@ -65,7 +71,7 @@ describe("#setUniqueIdOnSubmission", () => {
       mockEvent
     );
 
-    expect(response).toBe(2);
+    expect(response).toStrictEqual({ id: 2, row: 7 });
   });
 
   it("should throw an error if the active sheet is not found", () => {

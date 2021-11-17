@@ -18,17 +18,19 @@ export function onFormSubmit(
       `${REFERRALS_SHEET_NAME}`
     );
 
-    const currentUniqueId = setUniqueIdOnSubmission(
+    const currentSubmissionDetails = setUniqueIdOnSubmission(
       referralsSheet,
       FORM_SUBMISSION_ID_COLUMN_POSITION,
       event
     );
 
-    // Update the form submission object to contain its unique ID
-    formData.FormSubmissionId = [currentUniqueId.toString()];
-
+    const uniqueId = currentSubmissionDetails.id;
+    const rowPosition = currentSubmissionDetails.row;
+    // Update the form submission object to contain its unique ID & spreadsheet row
+    formData.FormSubmissionId = [uniqueId.toString()];
+    formData.SubmissionRowPosition = [rowPosition.toString()];
     // Send updated form submission object to AWS
-    sendDataToS3(S3_ENDPOINT_API, S3_ENDPOINT_API_KEY, currentUniqueId);
+    sendDataToS3(S3_ENDPOINT_API, S3_ENDPOINT_API_KEY, uniqueId);
   } catch (e: any) {
     Logger.log(
       JSON.stringify({
