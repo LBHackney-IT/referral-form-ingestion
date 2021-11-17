@@ -1,3 +1,7 @@
+data "aws_iam_policy" "full_cloudwatch_access" {
+  arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
 resource "aws_iam_role" "social_care_api_cloudwatch" {
   name               = "${var.resource_name_prefix}-api-gateway-cloudwatch-global"
   assume_role_policy = <<EOF
@@ -21,26 +25,7 @@ resource "aws_iam_role_policy" "social_care_api_cloudwatch" {
   name = "${var.resource_name_prefix}-api-gateway-cloudwatch-global-default"
   role = aws_iam_role.social_care_api_cloudwatch.id
 
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:DescribeLogGroups",
-                "logs:DescribeLogStreams",
-                "logs:PutLogEvents",
-                "logs:GetLogEvents",
-                "logs:FilterLogEvents"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-EOF
+  policy = data.aws_iam_policy.full_cloudwatch_access
 }
 
 resource "aws_iam_policy" "api_gateway_integration_s3_policy" {
