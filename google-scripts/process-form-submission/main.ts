@@ -26,7 +26,7 @@ export function onFormSubmit(
 
     const uniqueId = currentUniqueSubmissionDetails.id;
     const formRow = currentUniqueSubmissionDetails.row;
-    // Update the form submission object to contain its unique ID
+    // Update the form submission object to contain its unique ID & spreadsheet row
     formData.FormSubmissionId = [uniqueId.toString()];
     formData.FormRow = [formRow.toString()];
     // Send updated form submission object to AWS
