@@ -4,8 +4,12 @@ variable "resource_name_prefix" {
 }
 
 variable "environment" {
+  description = "The application environment for this deployment."
   type        = string
-  description = "Enviroment e.g. dev, stg, prod"
+  validation {
+    condition     = contains(["dev", "stg", "prod"], var.environment)
+    error_message = "Environment must be one of dev, stg or prod."
+  }
 }
 
 variable "region" {
