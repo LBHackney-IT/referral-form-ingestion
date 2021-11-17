@@ -120,7 +120,7 @@ describe("#handler", () => {
   });
 
   it("should call to add the created document url to a google sheet", async () => {
-    const documentUrl = `https://docs.google.com/spreadsheets/d/${documentId}/edit`;
+    const documentUrl = `https://docs.google.com/document/d/${documentId}/edit`;
     await handler(sqsTriggerEvent);
 
     expect(addGoogleDocUrlToSheet).toBeCalledWith(
