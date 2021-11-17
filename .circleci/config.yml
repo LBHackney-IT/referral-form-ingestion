@@ -11,6 +11,9 @@ executors:
   docker-python:
     docker:
       - image: circleci/python:3.7
+  docker-terraform:
+    docker:
+      - image: "hashicorp/terraform:light"
 
 references:
   workspace_root: &workspace_root "~"
@@ -79,6 +82,36 @@ jobs:
       - run:
           name: Clasp push
           command: ./node_modules/@google/clasp/build/src/index.js push --force
+
+  terraform-init-then-apply-to-staging:
+    executor: docker-terraform
+    description: "Initializes and applies terraform configuration for AWS MASH Resources"
+    working_directory: ~/project/terraform/mash-setup-staging
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          name: get and init
+          command: |
+            terraform get -update=true
+            terraform init -backend-config="bucket=terraform-state-staging-apis" -backend-config="region=eu-west-2" -backend-config="key="social-care-referrals/staging-terraform.tfstate" -backend-config="encrypt=true"
+      - run:
+          name: apply
+          command: |
+            terraform apply -auto-approve
+
+  assume-role-staging:
+    executor: docker-python
+    steps:
+      - checkout
+      - aws_assume_role/assume_role:
+          account: $AWS_ACCOUNT_STAGING
+          profile_name: default
+          role: "circleci-assume-role"
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
 
   assume-role-mosaic-production:
     executor: docker-python
@@ -163,6 +196,19 @@ workflows:
       - clasp-push:
           requires:
             - unit-tests-apps-script
+          filters:
+            branches:
+              only: main
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          requires:
+            - checkout
+          filters:
+            branches:
+              only: main
+      - terraform-init-then-apply-to-staging:
+          requires:
+            - assume-role-staging
           filters:
             branches:
               only: main
