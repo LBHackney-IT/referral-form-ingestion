@@ -1,6 +1,6 @@
-variable "project_name" {
+variable "resource_name_prefix" {
   type        = string
-  description = "Name that will be used as prefix for names of the REST API, S3 bucket and SQS queues"
+  description = "Will be used as a prefix for the resources. It can also be the name of the project."
 }
 
 variable "environment" {
@@ -8,9 +8,7 @@ variable "environment" {
   description = "Enviroment e.g. dev, stg, prod"
 }
 
-variable "core_region" {
-  type    = string
-  default = "eu-west-2"
-
+variable "region" {
+  type        = string
   description = "The AWS region the resources will be deployed into."
 }

@@ -5,7 +5,7 @@ resource "aws_api_gateway_integration" "social_care_referrals_s3_api" {
   type                    = "AWS"
   integration_http_method = "PUT"
   credentials             = aws_iam_role.api_gateway_integration_s3_role.arn
-  uri                     = "arn:aws:apigateway:${var.core_region}:s3:path/${aws_s3_bucket.social_care_referrals_bucket.bucket}/form-submissions/{form-data}"
+  uri                     = "arn:aws:apigateway:${var.region}:s3:path/${aws_s3_bucket.social_care_referrals_bucket.bucket}/form-submissions/{form-data}"
   passthrough_behavior    = "WHEN_NO_MATCH"
   content_handling        = "CONVERT_TO_TEXT"
 
