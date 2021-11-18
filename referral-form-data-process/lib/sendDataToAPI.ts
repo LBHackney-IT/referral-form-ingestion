@@ -31,8 +31,6 @@ export const sendDataToAPI = async (
             case "TEMP: Question for getting the people being referred":
                 clientsValue = value;
                 break;
-            default:
-                continue;
         }
     }
     const postObject = {
