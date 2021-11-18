@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "social_care_referrals_bucket" {
-  bucket = "${var.resource_name_prefix}-bucket"
+  bucket = "${local.resource_prefix}-bucket"
 }
 
 resource "aws_s3_bucket_notification" "social_care_referrals_bucket_notification" {

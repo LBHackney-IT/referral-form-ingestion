@@ -16,7 +16,7 @@ Copy the code below and fill in the parameters with the appropriate values.
 module "mash_data_processing" {
     source = path or url to-module
 
-    resource_name_prefix = name prefix for the resources created
+    application = name prefix for the resources created
     region = region
     environment = environment
 }
