@@ -32,7 +32,7 @@ export const handler = async (sqsEvent: SQSEvent) => {
         formData.FormRow.toString()
       );
 
-      await sendDataToAPI(formData, documentUrl);
+      //await sendDataToAPI(formData, documentUrl);
     })
   );
 };
