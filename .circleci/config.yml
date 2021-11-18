@@ -93,7 +93,7 @@ jobs:
           name: get and init
           command: |
             terraform get -update=true
-            terraform init -backend-config="bucket=terraform-state-staging-apis" -backend-config="region=eu-west-2" -backend-config="key="social-care-referrals/staging-terraform.tfstate" -backend-config="encrypt=true"
+            terraform init -backend-config="bucket=terraform-state-staging-apis" -backend-config="region=eu-west-2" -backend-config="key=social-care-referrals/staging-terraform.tfstate" -backend-config="encrypt=true"
       - run:
           name: apply
           command: |
