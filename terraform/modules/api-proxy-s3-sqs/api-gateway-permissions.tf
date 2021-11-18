@@ -25,7 +25,7 @@ resource "aws_iam_role_policy" "social_care_api_cloudwatch" {
   name = "${var.resource_name_prefix}-api-gateway-cloudwatch-global-default"
   role = aws_iam_role.social_care_api_cloudwatch.id
 
-  policy = data.aws_iam_policy.full_cloudwatch_access
+  policy = data.aws_iam_policy.full_cloudwatch_access.policy
 }
 
 resource "aws_iam_policy" "api_gateway_integration_s3_policy" {
