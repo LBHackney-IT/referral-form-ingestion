@@ -1,4 +1,4 @@
-variable "resource_name_prefix" {
+variable "application" {
   type        = string
   description = "Will be used as a prefix for the resources. It can also be the name of the project."
 }
@@ -15,4 +15,8 @@ variable "environment" {
 variable "region" {
   type        = string
   description = "The AWS region the resources will be deployed into."
+}
+
+locals {
+  resource_prefix = "${var.application}-${var.environment}"
 }

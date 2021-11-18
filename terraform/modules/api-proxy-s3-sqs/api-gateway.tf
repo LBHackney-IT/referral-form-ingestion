@@ -3,7 +3,7 @@ resource "aws_api_gateway_account" "social_care_api_gateway_account" {
 }
 
 resource "aws_api_gateway_rest_api" "social_care_referrals_s3_api" {
-  name = "${var.resource_name_prefix}-s3-api"
+  name = "${local.resource_prefix}-s3-api"
 }
 
 resource "aws_api_gateway_resource" "form_submissions" {
@@ -92,11 +92,11 @@ resource "aws_api_gateway_method_settings" "social_care_referrals_s3_api_setting
 }
 
 resource "aws_api_gateway_api_key" "social_care_referrals_s3_api_key" {
-  name = "${var.resource_name_prefix}-s3-api-key"
+  name = "${local.resource_prefix}-s3-api-key"
 }
 
 resource "aws_api_gateway_usage_plan" "social_care_referrals_s3_api_usage_plan" {
-  name = "${var.resource_name_prefix}-s3-api-usage-plan"
+  name = "${local.resource_prefix}-s3-api-usage-plan"
   api_stages {
     api_id = aws_api_gateway_rest_api.social_care_referrals_s3_api.id
     stage  = aws_api_gateway_stage.social_care_referrals_s3_api_stage.stage_name

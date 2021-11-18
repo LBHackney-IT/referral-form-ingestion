@@ -14,7 +14,7 @@ terraform {
 module "mash_data_processing" {
   source = "../modules/api-proxy-s3-sqs"
 
-  resource_name_prefix = "social-care-referrals"
-  region               = "eu-west-2"
-  environment          = "stg"
+  application = "social-care-referrals"
+  region      = "eu-west-2"
+  environment = "stg"
 }

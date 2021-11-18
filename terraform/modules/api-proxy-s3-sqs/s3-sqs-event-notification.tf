@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "social_care_referrals_queue" {
-  name                       = "${var.resource_name_prefix}-queue"
+  name                       = "${local.resource_prefix}-queue"
   redrive_policy             = "{\"deadLetterTargetArn\":\"${aws_sqs_queue.social_care_referrals_dl_queue.arn}\",\"maxReceiveCount\":5}"
   visibility_timeout_seconds = 300
 
@@ -13,7 +13,7 @@ resource "aws_sqs_queue" "social_care_referrals_queue" {
         "Service": "s3.amazonaws.com"
       },
       "Action": "SQS:SendMessage",
-      "Resource": "arn:aws:sqs:*:*:${var.resource_name_prefix}-queue",
+      "Resource": "arn:aws:sqs:*:*:${local.resource_prefix}-queue",
       "Condition": {
         "ArnLike": { "aws:SourceArn": "${aws_s3_bucket.social_care_referrals_bucket.arn}" }
       }
@@ -24,5 +24,5 @@ POLICY
 }
 
 resource "aws_sqs_queue" "social_care_referrals_dl_queue" {
-  name = "${var.resource_name_prefix}-dl-queue"
+  name = "${local.resource_prefix}-dl-queue"
 }
