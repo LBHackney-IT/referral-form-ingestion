@@ -89,7 +89,6 @@ jobs:
     working_directory: ~/project/terraform/mash-setup-staging
     steps:
       - *attach_workspace
-      - checkout
       - run:
           name: get and init
           command: |
