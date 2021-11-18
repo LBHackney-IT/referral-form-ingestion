@@ -3,6 +3,7 @@ import { addGoogleDocUrlToSheet } from "./lib/addGoogleDocUrlToSheet";
 import { createDocumentFromTemplate } from "./lib/createGoogleDocFromTemplate";
 import { generateAuth } from "./lib/generateGoogleAuth";
 import { getDataFromS3 } from "./lib/getDataFromS3";
+import { sendDataToAPI } from "./lib/sendDataToAPI";
 
 export const handler = async (sqsEvent: SQSEvent) => {
   const clientEmail = process.env.CLIENT_EMAIL as string;
@@ -30,6 +31,8 @@ export const handler = async (sqsEvent: SQSEvent) => {
         urlColumn,
         formData.FormRow.toString()
       );
+
+      await sendDataToAPI(formData, documentUrl);
     })
   );
 };
