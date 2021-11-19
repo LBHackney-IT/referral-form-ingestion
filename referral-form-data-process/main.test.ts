@@ -68,7 +68,7 @@ describe("#handler", () => {
     });
 
     (sendDataToAPI as jest.Mock).mockImplementation(() => {
-      return {};
+      return undefined;
     });
 
     process.env.CLIENT_EMAIL = testEmail;
