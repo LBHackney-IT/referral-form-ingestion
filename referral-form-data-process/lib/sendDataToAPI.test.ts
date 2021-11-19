@@ -29,7 +29,7 @@ describe("#sendDataToAPI", () => {
   });
 
   it("should call the service API with the correct parameters", async () => {
-    mockedAxios.post.mockResolvedValue({ data: {} });
+    mockedAxios.post.mockResolvedValue(undefined);
     const mockData = {
       referrer: testReferrerAnswer,
       requestedSupport: testSupportAnswer,
@@ -39,11 +39,14 @@ describe("#sendDataToAPI", () => {
 
     await sendDataToAPI(testFormData, testDocumentUrl);
 
-    expect(mockedAxios.post).toHaveBeenCalled();
-    expect(mockedAxios.post.mock.calls[0][0]).toEqual(`${testEndpoint}/`);
-    expect(mockedAxios.post.mock.calls[0][1]).toEqual(mockData);
-    expect(mockedAxios.post.mock.calls[0][2]?.headers).toEqual({
-      "x-api-key": testAPIKey,
-    });
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      `${testEndpoint}/`,
+      mockData,
+      {
+        headers: {
+          "x-api-key": testAPIKey,
+        },
+      }
+    );
   });
 });
