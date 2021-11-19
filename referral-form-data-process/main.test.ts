@@ -5,11 +5,13 @@ import { addGoogleDocUrlToSheet } from "./lib/addGoogleDocUrlToSheet";
 import { generateAuth } from "./lib/generateGoogleAuth";
 import { getDataFromS3 } from "./lib/getDataFromS3";
 import { handler } from "./main";
+import { sendDataToAPI } from "./lib/sendDataToAPI";
 
 jest.mock("./lib/getDataFromS3");
 jest.mock("./lib/generateGoogleAuth");
 jest.mock("./lib/createGoogleDocFromTemplate");
 jest.mock("./lib/addGoogleDocUrlToSheet");
+jest.mock("./lib/sendDataToAPI");
 
 describe("#handler", () => {
   const sqsTriggerEvent = {
@@ -62,6 +64,10 @@ describe("#handler", () => {
     });
 
     (addGoogleDocUrlToSheet as jest.Mock).mockImplementation(() => {
+      return {};
+    });
+
+    (sendDataToAPI as jest.Mock).mockImplementation(() => {
       return {};
     });
 
@@ -119,7 +125,7 @@ describe("#handler", () => {
     );
   });
 
-  it("should call to add the created document url to a google sheet", async () => {
+  it("should call #addGoogleDocUrlToSheet to add the created document url to a google sheet", async () => {
     const documentUrl = `https://docs.google.com/document/d/${documentId}/edit`;
     await handler(sqsTriggerEvent);
 
@@ -129,5 +135,13 @@ describe("#handler", () => {
       urlColumn,
       singleS3ObjectArray[0].FormRow.toString()
     );
+  });
+
+  it("should call #sendDataToApi to send certain submission data to the service API", async () => {
+    const documentUrl = `https://docs.google.com/document/d/${documentId}/edit`;
+
+    await handler(sqsTriggerEvent);
+
+    expect(sendDataToAPI).toBeCalledWith(singleS3ObjectArray[0], documentUrl);
   });
 });
