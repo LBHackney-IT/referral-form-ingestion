@@ -4,6 +4,7 @@ provider:
   name: aws
   runtime: nodejs14.x
   region: eu-west-2
+  stage: ${opt:stage}
   lambdaHashingVersion: 20201221
   iam:
     role:
@@ -11,15 +12,12 @@ provider:
         - Effect: "Allow"
           Action:
             - "s3:GetObject"
-          Resource:
-            Fn::Join:
-              - ""
-              - - "arn:aws:s3:::"
-                - "social-care-referrals-bucket"
-                - "/*"
+          Resource: "arn:aws:s3:::${self:custom.referralsBucket}/*"
 
 functions:
   main:
+    name: ${self:service}-${self:provider.stage}
+    handler: referral-form-data-process/main.handler
     environment:
       CLIENT_EMAIL: ${opt:CLIENT_EMAIL}
       PRIVATE_KEY: ${opt:PRIVATE_KEY}
@@ -27,7 +25,6 @@ functions:
       TITLE: ${opt:TITLE}
       URL_COLUMN: ${opt:URL_COLUMN}
       SPREADSHEET_ID: ${opt:SPREADSHEET_ID}
-    handler: referral-form-data-process/main.handler
     events:
       - sqs:
           arn:
@@ -36,4 +33,12 @@ functions:
               - - "arn:aws:sqs"
                 - Ref: "AWS::Region"
                 - Ref: "AWS::AccountId"
-                - "social-care-referrals-queue"
+                - "${self:custom.referralsQueue}"
+
+custom:
+  referralsBucket:
+    staging: social-care-referrals-stg-bucket
+    mosaic-prod: social-care-referrals-bucket
+  referralsQueue:
+    staging: social-care-referrals-stg-queue
+    mosaic-prod: social-care-referrals-queue

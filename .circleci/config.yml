@@ -160,19 +160,22 @@ jobs:
     environment:
       TZ: "Europe/London"
 
-  compile-lambda:
+  deploy-lambda-to-staging:
     executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - run:
-          name: Compile Lambda
+          name: Compile lambda
           command: yarn tsc main.ts
+      - run:
+          name: "deploy lambda"
+          command: "yarn deploy -s staging --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --TITLE $TITLE --URL_COLUMN $URL_COLUMN --SPREADSHEET_ID $SPREADSHEET_ID"
       - persist_to_workspace:
           root: *workspace_root
           paths: .
 
-  deploy-lambda:
+  deploy-lambda-to-mosaic-production:
     executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
@@ -217,29 +220,30 @@ workflows:
       - unit-tests-lambda:
           requires:
             - install-dependencies-lambda
-      - permit-deploy-production:
-          type: approval
+      - deploy-lambda-to-staging:
           requires:
             - unit-tests-lambda
+            - terraform-init-then-apply-to-staging
+          filters:
+            branches:
+              only: main
+      - permit-lambda-deploy-mosaic-prod:
+          type: approval
+          requires:
+            - deploy-lambda-to-staging
           filters:
             branches:
               only: main
       - assume-role-mosaic-production:
           context: api-assume-role-social-care-production-context
           requires:
-            - permit-deploy-production
+            - permit-lambda-deploy-mosaic-prod
           filters:
             branches:
               only: main
-      - compile-lambda:
+      - deploy-lambda-to-mosaic-production:
           requires:
             - assume-role-mosaic-production
-          filters:
-            branches:
-              only: main
-      - deploy-lambda:
-          requires:
-            - compile-lambda
           filters:
             branches:
               only: main
