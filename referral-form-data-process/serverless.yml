@@ -19,12 +19,12 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: referral-form-data-process/main.handler
     environment:
-      CLIENT_EMAIL: ${opt:CLIENT_EMAIL}
-      PRIVATE_KEY: ${opt:PRIVATE_KEY}
-      TEMPLATE_DOCUMENT_ID: ${opt:TEMPLATE_DOCUMENT_ID}
-      TITLE: ${opt:TITLE}
+      CLIENT_EMAIL: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-gcp-service-account-client-email~true}
+      PRIVATE_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-gcp-service-account-private-key~true}
+      TEMPLATE_DOCUMENT_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-referrals-google-doc-template-id~true}
+      SPREADSHEET_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-referrals-google-spreadsheet-id~true}
+      ITLE: ${opt:TITLE}
       URL_COLUMN: ${opt:URL_COLUMN}
-      SPREADSHEET_ID: ${opt:SPREADSHEET_ID}
     events:
       - sqs:
           arn:
