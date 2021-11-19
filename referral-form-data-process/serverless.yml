@@ -27,6 +27,8 @@ functions:
       TITLE: ${opt:TITLE}
       URL_COLUMN: ${opt:URL_COLUMN}
       SPREADSHEET_ID: ${opt:SPREADSHEET_ID}
+      ENDPOINT_API: ${opt:ENDPOINT_API}
+      AWS_KEY: ${opt:AWS_KEY}
     handler: referral-form-data-process/main.handler
     events:
       - sqs:

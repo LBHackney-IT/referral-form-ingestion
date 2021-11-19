@@ -84,6 +84,8 @@ The lambda which creates a new google doc and inserts it into the spreadsheet re
     5. TEMPLATE_DOCUMENT_ID -- the id of google doc we use as a template for creating new documents
     6. URL_COLUMN -- column that contains the URLs to to created google documents
     7. TITLE -- title of the document
+    8. ENDPOINT_API -- endpoint url for the service API
+    9. AWS_KEY -- API key to allow the lambda to call the service API
 
 ### How to configure CircleCI for automated deployment of our appscript
 
