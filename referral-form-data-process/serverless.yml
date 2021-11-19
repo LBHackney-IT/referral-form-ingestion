@@ -12,7 +12,7 @@ provider:
         - Effect: "Allow"
           Action:
             - "s3:GetObject"
-          Resource: "arn:aws:s3:::${self:custom.referralsBucket}/*"
+          Resource: "arn:aws:s3:::${self:custom.referralsBucket.${opt:stage}}/*"
 
 functions:
   main:
@@ -33,7 +33,7 @@ functions:
               - - "arn:aws:sqs"
                 - Ref: "AWS::Region"
                 - Ref: "AWS::AccountId"
-                - "${self:custom.referralsQueue}"
+                - "${self:custom.referralsQueue.${opt:stage}}"
 
 custom:
   referralsBucket:
