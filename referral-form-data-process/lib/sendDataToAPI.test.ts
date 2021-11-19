@@ -29,7 +29,7 @@ describe("#sendDataToAPI", () => {
   });
 
   it("should call the service API with the correct parameters", async () => {
-    mockedAxios.post.mockResolvedValue(undefined);
+    mockedAxios.post.mockResolvedValue({ data: {} });
     const mockData = {
       referrer: testReferrerAnswer,
       requestedSupport: testSupportAnswer,
