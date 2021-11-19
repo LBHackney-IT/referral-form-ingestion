@@ -19,10 +19,10 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: referral-form-data-process/main.handler
     environment:
-      CLIENT_EMAIL: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-gcp-service-account-client-email~true}
-      PRIVATE_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-gcp-service-account-private-key~true}
-      TEMPLATE_DOCUMENT_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-referrals-google-doc-template-id~true}
-      SPREADSHEET_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-stg-referrals-google-spreadsheet-id~true}
+      CLIENT_EMAIL: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-gcp-service-account-client-email~true}
+      PRIVATE_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-gcp-service-account-private-key~true}
+      TEMPLATE_DOCUMENT_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-referrals-google-doc-template-id~true}
+      SPREADSHEET_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-referrals-google-spreadsheet-id~true}
       ITLE: ${opt:TITLE}
       URL_COLUMN: ${opt:URL_COLUMN}
     events:
@@ -42,3 +42,6 @@ custom:
   referralsQueue:
     staging: social-care-referrals-stg-queue
     mosaic-prod: social-care-referrals-queue
+  environmentTag:
+    staging: stg
+    mosaic-prod: prod
