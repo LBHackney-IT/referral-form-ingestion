@@ -73,17 +73,82 @@ The lambda which creates a new google doc and inserts it into the spreadsheet re
 
 ## Deployments
 
+We have two environments:
 
-## Environment Variables
+- Staging (i.e. StagingAPIs AWS account)
+- Production (i.e. Mosaic-Production AWS account)
 
-1. In CircleCI, add the following environment variables: 
-    1. CLIENT_EMAIL -- the email associated with the Google Service account
-    2. PRIVATE_KEY  -- the private key of the Google Service account
-    3. CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
-    4. SPREADSHEET_ID -- the id of google spreadsheet that we update
-    5. TEMPLATE_DOCUMENT_ID -- the id of google doc we use as a template for creating new documents
-    6. URL_COLUMN -- column that contains the URLs to to created google documents
-    7. TITLE -- title of the document
+### Deploying terraform managed AWS resources
+
+There are two repos relevant for deploying our AWS resources:
+
+1. This [repo](https://github.com/LBHackney-IT/social-care-referral-form-ingestion) contains the [files and setup](terraform) responsible for deploying to _Staging_.
+2. The [infrastructure repo](https://github.com/LBHackney-IT/infrastructure/tree/master/projects/mosaic) contains the files and setup responsible for deploying to _Production_.
+
+### MASH Terraform Module
+
+The _Staging_ Social Care System lives in the `StagingAPIs` AWS account while the _Production_ Social Care System lives in the `Mosaic-Production` AWS account.
+
+The MASH referrals process will integrate with the Social Care System and why we need to deploy the MASH AWS infrastructure to these AWS accounts.
+
+To allow us to have a single source of truth of how our terraform-managed AWS resources are defined, we have created a [MASH module](terraform/modules/api-proxy-s3-sqs).
+
+The idea is:
+
+- we import the module into the repo responsible for deploying it to our desired AWS environment.
+- we would only need to manage one set of files rather than duplicates across repos.
+
+The MASH module encapsulates the terraform definitions for creating:
+
+- secrets manager resources to hold our Google credentials.
+- S3 bucket with an API proxy
+- SQS
+- S3 bucket event notifications
+
+### Deploying to AWS StagingAPIs (Lambda & MASH module)
+
+Any desired changes to our [lambda code](referral-form-data-process) or the MASH terraform module need to be merged into the `main` branch first.
+
+The CI pipeline only deploys changes on the `main` branch to staging. It will not trigger the job on any other branch.
+
+We use CircleCI to handle deployment jobs; see [CircleCI config](.circleci/config.yml).
+
+### Deploying to AWS Mosaic-Production
+
+#### Lambda changes
+
+Any desired changes to our [lambda code](referral-form-data-process) needs to be merged into the `main` branch first. This will trigger the jobs that deploy to staging first.
+
+If the staging build jobs succeed, the `permit-lambda-deploy-mosaic-prod` job needs to be approved before the pipeline deploys the lambda code to production.
+
+> ⚠️ Note! Only the lambda is deployed to production, not the MASH module. See below.
+
+#### TODO: Terraform changes i.e MASH module
+
+Currently, the MASH module is not imported into the infrastructure repo. This will be part of upcoming work.
+
+Changes to the current production infrastructure can be made by editing the files responsible for the social care referral resources in the [infrastructure repo](https://github.com/LBHackney-IT/infrastructure/tree/master/projects/mosaic).
+
+> ⚠️ Note! The MASH module will be used as an import in the future for the production terraform deploys.
+
+### Environment Variables
+
+1. The following environment variables are saved as secrets in AWS:
+
+```text
+  CLIENT_EMAIL -- the email associated with the Google Service account
+  PRIVATE_KEY -- the private key of the Google Service account
+  SPREADSHEET_ID -- the id of the google spreadsheet that we update
+  TEMPLATE_DOCUMENT_ID -- the id of google doc we use as a template for creating new documents
+```
+
+2. The following environment variables are saved in the Circle CI project settings:
+
+```text
+  CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
+  URL_COLUMN -- column that contains the URLs to created google documents
+  TITLE -- the title of the google document
+```
 
 ### How to configure CircleCI for automated deployment of our appscript
 
