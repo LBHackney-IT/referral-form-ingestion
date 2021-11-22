@@ -33,5 +33,7 @@ export const sendDataToAPI = async (
     referralUri: documentURL,
   };
 
-  await axios.post(`${ENDPOINT_API}/`, postObject, { headers: headers });
+  await axios.post(`${ENDPOINT_API}/mash-referral`, postObject, {
+    headers: headers,
+  });
 };

@@ -40,7 +40,7 @@ describe("#sendDataToAPI", () => {
     await sendDataToAPI(testFormData, testDocumentUrl);
 
     expect(mockedAxios.post).toHaveBeenCalledWith(
-      `${testEndpoint}/`,
+      `${testEndpoint}/mash-referral`,
       mockData,
       {
         headers: {
