@@ -27,7 +27,6 @@ functions:
       URL_COLUMN: ${opt:URL_COLUMN}
       ENDPOINT_API: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-endpoint}
       AWS_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-aws-key}
-    handler: referral-form-data-process/main.handler
     events:
       - sqs:
           arn:
