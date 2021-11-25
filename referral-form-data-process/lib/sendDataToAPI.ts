@@ -3,7 +3,6 @@ import axios from "axios";
 interface FormDataAnswersObject {
   referrerFirstName: string | undefined;
   referrerLastName: string | undefined;
-  requestedSupport: string | undefined;
   clientOneFirstName: string | undefined;
   clientOneLastName: string | undefined;
   clientTwoFirstName: string | undefined;
@@ -20,6 +19,7 @@ interface FormDataAnswersObject {
   clientSevenLastName: string | undefined;
   clientEightFirstName: string | undefined;
   clientEightLastName: string | undefined;
+  requestedSupport: string | undefined;
 }
 
 export const sendDataToAPI = async (
@@ -29,10 +29,9 @@ export const sendDataToAPI = async (
   const ENDPOINT_API = process.env.ENDPOINT_API as string;
   const AWS_KEY = process.env.AWS_KEY as string;
   const headers = { "x-api-key": AWS_KEY };
-  let formDataAnswersObject: FormDataAnswersObject = {
+  const formDataAnswersObject: FormDataAnswersObject = {
     referrerFirstName: undefined,
     referrerLastName: undefined,
-    requestedSupport: undefined,
     clientOneFirstName: undefined,
     clientOneLastName: undefined,
     clientTwoFirstName: undefined,
@@ -49,69 +48,40 @@ export const sendDataToAPI = async (
     clientSevenLastName: undefined,
     clientEightFirstName: undefined,
     clientEightLastName: undefined,
+    requestedSupport: undefined,
   };
+  const mappingOfQuestionsToProperties = new Map([
+    ["Referrer First Name", "referrerFirstName"],
+    ["Referrer Last Name", "referrerLastName"],
+    ["Child 1: Child's First Name", "clientOneFirstName"],
+    ["Child 1: Child's Last Name", "clientOneLastName"],
+    ["Child 2: Child's First Name", "clientTwoFirstName"],
+    ["Child 2: Child's Last Name", "clientTwoLastName"],
+    ["Child 3: Child's First Name", "clientThreeFirstName"],
+    ["Child 3: Child's Last Name", "clientThreeLastName"],
+    ["Child 4: Child's First Name", "clientFourFirstName"],
+    ["Child 4: Child's Last Name", "clientFourLastName"],
+    ["Child 5: Child's First Name", "clientFiveFirstName"],
+    ["Child 5: Child's Last Name", "clientFiveLastName"],
+    ["Child 6: Child's First Name", "clientSixFirstName"],
+    ["Child 6: Child's Last Name", "clientSixLastName"],
+    ["Child 7: Child's First Name", "clientSevenFirstName"],
+    ["Child 7: Child's Last Name", "clientSevenLastName"],
+    ["Child 8: Child's First Name", "clientEightFirstName"],
+    ["Child 8: Child's Last Name", "clientEightLastName"],
+    [
+      "What support do you think the child(ren) would benefit from?",
+      "requestedSupport",
+    ],
+  ]);
   let clientsValue: string[] | undefined = [];
 
   const dataEntries = Object.entries(formData);
   for (const [key, value] of dataEntries) {
-    if (key === "Referrer First Name") {
-      formDataAnswersObject.referrerFirstName = value.toString();
-    }
-    if (key === "Referrer Last Name") {
-      formDataAnswersObject.referrerLastName = value.toString();
-    }
-    if (
-      key === "What support do you think the child(ren) would benefit from?"
-    ) {
-      formDataAnswersObject.requestedSupport = value.toString();
-    }
-    if (key === "Child 1: Child's First Name") {
-      formDataAnswersObject.clientOneFirstName = value.toString();
-    }
-    if (key === "Child 1: Child's Last Name") {
-      formDataAnswersObject.clientOneLastName = value.toString();
-    }
-    if (key === "Child 2: Child's First Name") {
-      formDataAnswersObject.clientTwoFirstName = value.toString();
-    }
-    if (key === "Child 2: Child's Last Name") {
-      formDataAnswersObject.clientTwoLastName = value.toString();
-    }
-    if (key === "Child 3: Child's First Name") {
-      formDataAnswersObject.clientThreeFirstName = value.toString();
-    }
-    if (key === "Child 3: Child's Last Name") {
-      formDataAnswersObject.clientThreeLastName = value.toString();
-    }
-    if (key === "Child 4: Child's First Name") {
-      formDataAnswersObject.clientFourFirstName = value.toString();
-    }
-    if (key === "Child 4: Child's Last Name") {
-      formDataAnswersObject.clientFourLastName = value.toString();
-    }
-    if (key === "Child 5: Child's First Name") {
-      formDataAnswersObject.clientFiveFirstName = value.toString();
-    }
-    if (key === "Child 5: Child's Last Name") {
-      formDataAnswersObject.clientFiveLastName = value.toString();
-    }
-    if (key === "Child 6: Child's First Name") {
-      formDataAnswersObject.clientSixFirstName = value.toString();
-    }
-    if (key === "Child 6: Child's Last Name") {
-      formDataAnswersObject.clientSixLastName = value.toString();
-    }
-    if (key === "Child 7: Child's First Name") {
-      formDataAnswersObject.clientSevenFirstName = value.toString();
-    }
-    if (key === "Child 7: Child's Last Name") {
-      formDataAnswersObject.clientSevenLastName = value.toString();
-    }
-    if (key === "Child 8: Child's First Name") {
-      formDataAnswersObject.clientEightFirstName = value.toString();
-    }
-    if (key === "Child 8: Child's Last Name") {
-      formDataAnswersObject.clientEightLastName = value.toString();
+    if (mappingOfQuestionsToProperties.has(key)) {
+      formDataAnswersObject[
+        mappingOfQuestionsToProperties.get(key) as keyof FormDataAnswersObject
+      ] = value.toString();
     }
   }
 
