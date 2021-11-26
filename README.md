@@ -146,6 +146,8 @@ Changes to the current production infrastructure can be made by editing the file
   PRIVATE_KEY -- the private key of the Google Service account
   SPREADSHEET_ID -- the id of the google spreadsheet that we update
   TEMPLATE_DOCUMENT_ID -- the id of google doc we use as a template for creating new documents
+  ENDPOINT_API -- endpoint url for the service API
+  AWS_KEY -- API key to allow the lambda to call the service API
 ```
 
 2. The following environment variables are saved in the Circle CI project settings:

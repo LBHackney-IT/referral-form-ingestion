@@ -182,7 +182,7 @@ jobs:
       - *attach_workspace
       - run:
           name: "deploy"
-          command: "yarn deploy -s mosaic-prod --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --TITLE $TITLE --URL_COLUMN $URL_COLUMN --SPREADSHEET_ID $SPREADSHEET_ID"
+          command: "yarn deploy -s mosaic-prod --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --TITLE $TITLE --URL_COLUMN $URL_COLUMN --SPREADSHEET_ID $SPREADSHEET_ID --ENDPOINT_API $ENDPOINT_API --AWS_KEY $AWS_KEY"
 
 workflows:
   version: 2
