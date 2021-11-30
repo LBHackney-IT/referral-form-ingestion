@@ -17,3 +17,13 @@ resource "aws_secretsmanager_secret" "referrals_google_spreadsheet_id" {
   name        = "${local.resource_prefix}-referrals-google-spreadsheet-id"
   description = "The ID of the MASH spreadsheet"
 }
+
+resource "aws_secretsmanager_secret" "case_viewer_service_api_endpoint" {
+  name        = "${local.resource_prefix}-service-api-endpoint"
+  description = "API endpoint for the Social Care Case Viewer System"
+}
+
+resource "aws_secretsmanager_secret" "case_viewer_service_api_aws_key" {
+  name        = "${local.resource_prefix}-service-api-aws-key"
+  description = "API key for the Social Care Case Viewer API"
+}
