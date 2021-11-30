@@ -25,8 +25,8 @@ functions:
       SPREADSHEET_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-referrals-google-spreadsheet-id~true}
       TITLE: ${opt:TITLE}
       URL_COLUMN: ${opt:URL_COLUMN}
-      ENDPOINT_API: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-endpoint}
-      AWS_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-aws-key}
+      ENDPOINT_API: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-endpoint~true}
+      AWS_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-aws-key~true}
     events:
       - sqs:
           arn:
