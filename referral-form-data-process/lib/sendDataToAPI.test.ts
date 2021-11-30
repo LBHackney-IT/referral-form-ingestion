@@ -45,7 +45,7 @@ describe("#sendDataToAPI", () => {
     await sendDataToAPI(testFormData, testDocumentUrl);
 
     expect(mockedAxios.post).toHaveBeenCalledWith(
-      `${testEndpoint}/mash-referral`,
+      `${testEndpoint}/api/v1/mash-referral`,
       mockData,
       {
         headers: {
@@ -81,7 +81,7 @@ describe("#sendDataToAPI", () => {
     await sendDataToAPI(testFormData, testDocumentUrl);
 
     expect(mockedAxios.post).toHaveBeenCalledWith(
-      `${testEndpoint}/mash-referral`,
+      `${testEndpoint}/api/v1/mash-referral`,
       mockData,
       {
         headers: {
