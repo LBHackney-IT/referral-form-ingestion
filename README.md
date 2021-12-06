@@ -23,6 +23,8 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
       - [TODO: Terraform changes i.e MASH module](#todo-terraform-changes-ie-mash-module)
     - [Environment Variables](#environment-variables)
     - [How to configure CircleCI for automated deployment of our appscript](#how-to-configure-circleci-for-automated-deployment-of-our-appscript)
+  - [Testing](#testing)
+    - [Manually testing end-to-end](#manually-testing-end-to-end)
   - [Troubleshooting](#troubleshooting)
     - [Clasp push suddenly stops working](#clasp-push-suddenly-stops-working)
   - [Related repositories](#related-repositories)
@@ -165,6 +167,16 @@ Changes to the current production infrastructure can be made by editing the file
 3. In the script editor view go to settings (click cog icon)
 4. Copy the Script ID value
 5. Go to google-scripts/clasp.json and update the value associated with scriptId with what you just copied
+
+## Testing
+
+### Manually testing end-to-end
+
+Due to the interaction between Google services such as Google Forms, Docs and Sheets and our main application, it is important to test the full workflow for the MASH functionality manually. This involves filling out the Google Form and viewing the form response and generated Google Doc within the spreadsheet.
+
+A staging version of the Google Form, Document template, Sheet and Apps script (In-Progress) has been created to allow the ability to test the Google related services manually. The Google Form, Document Template and Sheet are held on the shared Google Drive for the Social Care project and has its own folder called _Referrals-MASH Workflow_. If you do not have access to this Drive you can contact one of the content managers of the Drive for access.
+
+(WIP: Add section related to Apps Script once the staging version has been created)
 
 ## Troubleshooting
 
