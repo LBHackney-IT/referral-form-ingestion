@@ -81,7 +81,7 @@ jobs:
             echo "{\"timeZone\": \"Europe\/London\",\"dependencies\": {},\"exceptionLogging\": \"STACKDRIVER\",\"runtimeVersion\": \"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
       - run:
           name: change script id to staging script
-          command: clasp setting scriptId 1A3I14stItdRriqUriNq5ENm_xGnRaEY_CUkn7W_OeMpVOZOBhdrrX2SQ
+          command: ./node_modules/@google/clasp/build/src/index.js setting scriptId 1A3I14stItdRriqUriNq5ENm_xGnRaEY_CUkn7W_OeMpVOZOBhdrrX2SQ
       - run:
           name: Clasp push
           command: ./node_modules/@google/clasp/build/src/index.js push --force
