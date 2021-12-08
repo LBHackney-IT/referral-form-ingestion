@@ -12,7 +12,7 @@ provider:
         - Effect: "Allow"
           Action:
             - "s3:GetObject"
-          Resource: "arn:aws:s3:::${self:custom.referralsBucket.${opt:stage}}/*"
+          Resource: "arn:aws:s3:::social-care-referrals-${self:custom.environmentTag.${opt:stage}}-bucket/*"
 
 functions:
   main:
@@ -35,15 +35,9 @@ functions:
               - - "arn:aws:sqs"
                 - Ref: "AWS::Region"
                 - Ref: "AWS::AccountId"
-                - "${self:custom.referralsQueue.${opt:stage}}"
+                - "social-care-referrals-${self:custom.environmentTag.${opt:stage}}-queue"
 
 custom:
-  referralsBucket:
-    staging: social-care-referrals-stg-bucket
-    mosaic-prod: social-care-referrals-prod-bucket
-  referralsQueue:
-    staging: social-care-referrals-stg-queue
-    mosaic-prod: social-care-referrals-prod-queue
   environmentTag:
     staging: stg
     mosaic-prod: prod
