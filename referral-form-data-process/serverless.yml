@@ -40,10 +40,10 @@ functions:
 custom:
   referralsBucket:
     staging: social-care-referrals-stg-bucket
-    mosaic-prod: social-care-referrals-bucket
+    mosaic-prod: social-care-referrals-prod-bucket
   referralsQueue:
     staging: social-care-referrals-stg-queue
-    mosaic-prod: social-care-referrals-queue
+    mosaic-prod: social-care-referrals-prod-queue
   environmentTag:
     staging: stg
     mosaic-prod: prod
