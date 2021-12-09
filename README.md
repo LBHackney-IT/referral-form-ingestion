@@ -20,7 +20,7 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
     - [Deploying to AWS StagingAPIs (Lambda & MASH module)](#deploying-to-aws-stagingapis-lambda--mash-module)
     - [Deploying to AWS Mosaic-Production](#deploying-to-aws-mosaic-production)
       - [Lambda changes](#lambda-changes)
-      - [TODO: Terraform changes i.e MASH module](#todo-terraform-changes-ie-mash-module)
+      - [Terraform changes i.e MASH module](#terraform-changes-ie-mash-module)
     - [Environment Variables](#environment-variables)
     - [How to configure CircleCI for automated deployment of our appscript](#how-to-configure-circleci-for-automated-deployment-of-our-appscript)
   - [Testing](#testing)
@@ -131,13 +131,16 @@ If the staging build jobs succeed, the `permit-lambda-deploy-mosaic-prod` job ne
 
 > ⚠️ Note! Only the lambda is deployed to production, not the MASH module. See below.
 
-#### TODO: Terraform changes i.e MASH module
+#### Terraform changes i.e MASH module
 
-Currently, the MASH module is not imported into the infrastructure repo. This will be part of upcoming work.
+For deploying our terraform managed AWS resources, we import the MASH module into the infrastructure repo.
+Due to the terraform linter settings on the infrastructure project, we can't import a terraform resource that is not pinned; see [here](https://github.com/terraform-linters/tflint/blob/master/docs/rules/terraform_module_pinned_source.md) for the tflint documentation.
 
-Changes to the current production infrastructure can be made by editing the files responsible for the social care referral resources in the [infrastructure repo](https://github.com/LBHackney-IT/infrastructure/tree/master/projects/mosaic).
+Therefore, the pinned version of the MASH module that we import is `v1.1.0`.
 
-> ⚠️ Note! The MASH module will be used as an import in the future for the production terraform deploys.
+To make any changes to the current social care referral production infrastructure, add/edit/remove the files responsible within the [infrastructure repo](https://github.com/LBHackney-IT/infrastructure/tree/master/projects/mosaic).
+
+> ⚠️ Note! The version of the MASH module imported is pinned at `v1.1.0`. Any changes to the MASH module would require creating a new release tag in this repo and updating the ref value in the source URL in the infrastructure repo.
 
 ### Environment Variables
 
