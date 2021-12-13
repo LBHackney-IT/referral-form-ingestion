@@ -228,15 +228,15 @@ workflows:
           context: api-assume-role-staging-context
           requires:
             - checkout
-          filters:
-            branches:
-              only: main
-      - terraform-init-then-apply-to-staging:
-          requires:
-            - assume-role-staging
-          filters:
-            branches:
-              only: main
+          # filters:
+          #   branches:
+          #     only: main
+      # - terraform-init-then-apply-to-staging:
+      #     requires:
+      #       - assume-role-staging
+      #     filters:
+      #       branches:
+      #         only: main
       - install-dependencies-lambda:
           requires:
             - checkout
@@ -246,10 +246,10 @@ workflows:
       - deploy-lambda-to-staging:
           requires:
             - unit-tests-lambda
-            - terraform-init-then-apply-to-staging
-          filters:
-            branches:
-              only: main
+            # - terraform-init-then-apply-to-staging
+          # filters:
+          #   branches:
+          #     only: main
       - permit-lambda-deploy-mosaic-prod:
           type: approval
           requires:
