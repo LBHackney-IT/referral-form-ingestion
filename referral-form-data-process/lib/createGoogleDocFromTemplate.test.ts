@@ -10,6 +10,7 @@ jest.mock("googleapis", () => ({
     drive: jest.fn().mockImplementation(() => ({
       files: {
         copy: mockCopy,
+        supportsAllDrives: true
       },
     })),
     docs: jest.fn().mockImplementation(() => ({
@@ -93,6 +94,7 @@ describe("#createDocumentFromTemplate", () => {
     expect(mockCopy).toBeCalledWith({
       fileId: testTemplateDocumentId,
       requestBody: { name: newDocumentTitle },
+      supportsAllDrives: true,
     });
   });
 
