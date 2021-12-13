@@ -221,6 +221,7 @@ workflows:
       - clasp-push:
           requires:
             - unit-tests-apps-script
+            - clasp-push-staging
           filters:
             branches:
               only: main
