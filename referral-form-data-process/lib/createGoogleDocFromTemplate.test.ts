@@ -10,7 +10,7 @@ jest.mock("googleapis", () => ({
     drive: jest.fn().mockImplementation(() => ({
       files: {
         copy: mockCopy,
-        supportsAllDrives: true
+        supportsAllDrives: true,
       },
     })),
     docs: jest.fn().mockImplementation(() => ({
