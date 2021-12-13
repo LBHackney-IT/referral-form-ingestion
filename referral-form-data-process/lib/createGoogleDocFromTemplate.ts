@@ -18,7 +18,7 @@ export const createDocumentFromTemplate = async (
     requestBody: {
       name: title,
     },
-    supportsAllDrives: true
+    supportsAllDrives: true,
   });
 
   if (!duplicatedFile || !duplicatedFile.id) {
