@@ -29,7 +29,7 @@ export const handler = async (sqsEvent: SQSEvent) => {
         googleAuthToken,
         documentUrl,
         urlColumn,
-        formData.FormRow.toString()
+        formData.SubmissionRowPosition.toString()
       );
 
       await sendDataToAPI(formData, documentUrl);
