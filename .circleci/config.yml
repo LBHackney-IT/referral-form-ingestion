@@ -245,6 +245,7 @@ workflows:
             - install-dependencies-lambda
       - deploy-lambda-to-staging:
           requires:
+            - assume-role-staging
             - unit-tests-lambda
             # - terraform-init-then-apply-to-staging
           # filters:
