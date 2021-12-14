@@ -1,7 +1,9 @@
 import { createListOfReferredClients } from "./helpers/createListOfReferredClients";
 import { mapFormDataToFormDataAnswersObject } from "./helpers/mapFormDataToFormDataAnswersObject";
 
-export const generateDocTitle = (formData: Record<string, string[]>) => {
+export const generateGoogleDocumentTitle = (
+  formData: Record<string, string[]>
+) => {
   const service = "MASH";
   const mappedDataObject = mapFormDataToFormDataAnswersObject(formData);
   const clientList = createListOfReferredClients(mappedDataObject);

@@ -6,14 +6,25 @@ import { generateAuth } from "./lib/generateGoogleAuth";
 import { getDataFromS3 } from "./lib/getDataFromS3";
 import { handler } from "./main";
 import { sendDataToAPI } from "./lib/sendDataToAPI";
+import { generateGoogleDocumentTitle } from "./lib/generateGoogleDocumentTitle";
 
 jest.mock("./lib/getDataFromS3");
 jest.mock("./lib/generateGoogleAuth");
 jest.mock("./lib/createGoogleDocFromTemplate");
 jest.mock("./lib/addGoogleDocUrlToSheet");
 jest.mock("./lib/sendDataToAPI");
+jest.mock("./lib/generateGoogleDocumentTitle");
 
 describe("#handler", () => {
+  const testEmail = "test@email.com";
+  const testKey = "1234";
+  const testTemplateId = "0001111";
+  const testDocumentTitle = "Test Document | MASH";
+  const urlColumn = "1";
+  const documentId = "12345";
+
+  const googleAuthToken = { test: "this is a test token" } as unknown as JWT;
+
   const sqsTriggerEvent = {
     Records: [{}],
   } as SQSEvent;
@@ -39,15 +50,6 @@ describe("#handler", () => {
     },
   ];
 
-  const testEmail = "test@email.com";
-  const testKey = "1234";
-  const testTemplateId = "0001111";
-  const testTitle = "A google document";
-  const urlColumn = "1";
-  const documentId = "12345";
-
-  const googleAuthToken = { test: "this is a test token" } as unknown as JWT;
-
   beforeEach(() => {
     jest.resetAllMocks();
 
@@ -57,6 +59,10 @@ describe("#handler", () => {
 
     (generateAuth as jest.Mock).mockImplementation(() => {
       return googleAuthToken;
+    });
+
+    (generateGoogleDocumentTitle as jest.Mock).mockImplementation(() => {
+      return testDocumentTitle;
     });
 
     (createDocumentFromTemplate as jest.Mock).mockImplementation(() => {
@@ -74,7 +80,6 @@ describe("#handler", () => {
     process.env.CLIENT_EMAIL = testEmail;
     process.env.PRIVATE_KEY = testKey;
     process.env.TEMPLATE_DOCUMENT_ID = testTemplateId;
-    process.env.TITLE = testTitle;
     process.env.URL_COLUMN = urlColumn;
   });
 
@@ -90,13 +95,19 @@ describe("#handler", () => {
     expect(generateAuth).toHaveBeenCalledWith(testEmail, testKey);
   });
 
+  it("should call #generateGoogleDocumentTitle to create a title for the Google doc", async () => {
+    await handler(sqsTriggerEvent);
+
+    expect(generateGoogleDocumentTitle).toBeCalledWith(singleS3ObjectArray[0]);
+  });
+
   it("it should call #createDocumentFromTemplate when a token has been generated and form data retrieved", async () => {
     await handler(sqsTriggerEvent);
 
     expect(createDocumentFromTemplate).toHaveBeenCalledWith(
       googleAuthToken,
       testTemplateId,
-      testTitle,
+      testDocumentTitle,
       singleS3ObjectArray[0]
     );
   });
@@ -112,7 +123,7 @@ describe("#handler", () => {
       1,
       googleAuthToken,
       testTemplateId,
-      testTitle,
+      testDocumentTitle,
       multipleS3ObjectArray[0]
     );
 
@@ -120,7 +131,7 @@ describe("#handler", () => {
       2,
       googleAuthToken,
       testTemplateId,
-      testTitle,
+      testDocumentTitle,
       multipleS3ObjectArray[1]
     );
   });

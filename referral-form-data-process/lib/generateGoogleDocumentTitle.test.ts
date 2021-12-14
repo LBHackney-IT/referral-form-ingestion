@@ -1,4 +1,4 @@
-import { generateDocTitle } from "./generateGoogleDocumentTitle";
+import { generateGoogleDocumentTitle } from "./generateGoogleDocumentTitle";
 
 describe("#generateDocTitle", () => {
   it("should generate the title for the google document for one resident", () => {
@@ -13,7 +13,7 @@ describe("#generateDocTitle", () => {
       "Child 3: Child's Last Name": [""],
     };
 
-    const actualValue = generateDocTitle(mockFormData);
+    const actualValue = generateGoogleDocumentTitle(mockFormData);
     const expectedValue = "Sam Smith | MASH";
 
     expect(actualValue).toBe(expectedValue);
@@ -41,7 +41,7 @@ describe("#generateDocTitle", () => {
       "Child 8: Child's Last Name": [""],
     };
 
-    const actualValue = generateDocTitle(mockFormData);
+    const actualValue = generateGoogleDocumentTitle(mockFormData);
     const expectedValue = "Peter Parker +3 | MASH";
 
     expect(actualValue).toBe(expectedValue);
@@ -69,7 +69,7 @@ describe("#generateDocTitle", () => {
       "Child 8: Child's Last Name": ["Right"],
     };
 
-    const actualValue = generateDocTitle(mockFormData);
+    const actualValue = generateGoogleDocumentTitle(mockFormData);
     const expectedValue = "Apple Pie +7 | MASH";
 
     expect(actualValue).toBe(expectedValue);
