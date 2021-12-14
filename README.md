@@ -27,6 +27,7 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
     - [Manually testing end-to-end](#manually-testing-end-to-end)
   - [Troubleshooting](#troubleshooting)
     - [Clasp push suddenly stops working](#clasp-push-suddenly-stops-working)
+    - [Changing the properties for the Apps Script](#changing-the-properties-for-the-apps-script)
   - [Related repositories](#related-repositories)
   - [Active contributors](#active-contributors)
   - [License](#license)
@@ -47,6 +48,8 @@ Apps script code is triggered by the submission which then:
 - Sends the form data and its ID to AWS where the data will be further processed.
 
 The Google Apps script code makes an HTTP PUT request to add an object containing the form data to the `form-submissions` folder in our S3 bucket.
+
+Another important Google service used for this ingestion process is Google Cloud Project. The main purpose of the Google Cloud Project is to allow the creation of a Google service account. A service account allows us to communicate with Google API's such as Drive and Docs without having to use an actual team members Google account. A project has already been setup with two service accounts: one for production and one for staging. For access for the Google project please contact one of the active maintainers of this repo.
 
 #### AWS Side of Things
 
@@ -77,7 +80,10 @@ The lambda which creates a new google doc and inserts it into the spreadsheet re
 3. After the service account has been created, you must retrieve its credentials which can be downloaded on the service account management page
 4. The important properties from the service account credentials are: `client_email` & `private_key`. The credentials must be retrieved from the person who created the service account and should be stored safely in AWS secrets manager
 5. The service account requires the following API access added from the Google cloud console: Drive, Spreadsheets, Documents
-6. The service account email must also be added as an editor to the desired spreadsheet
+6. The service account must be given access to multiple Google Services:
+    - Google Document template for the form data
+    - Google spreadsheet which contains the form data
+    - The folder within the shared Drive which contain the document template.
 
 ## Deployments
 
@@ -177,9 +183,8 @@ To make any changes to the current social care referral production infrastructur
 
 Due to the interaction between Google services such as Google Forms, Docs and Sheets and our main application, it is important to test the full workflow for the MASH functionality manually. This involves filling out the Google Form and viewing the form response and generated Google Doc within the spreadsheet.
 
-A staging version of the Google Form, Document template, Sheet and Apps script (In-Progress) has been created to allow the ability to test the Google related services manually. The Google Form, Document Template and Sheet are held on the shared Google Drive for the Social Care project and has its own folder called _Referrals-MASH Workflow_. If you do not have access to this Drive you can contact one of the content managers of the Drive for access.
+A staging version of the Google Form, Document template, Sheet and Apps script has been created to allow the ability to test the Google related services manually. The Google Form, Document Template and Sheet are held on the shared Google Drive for the Social Care project and has its own folder called _Referrals-MASH Workflow_. If you do not have access to this Drive you can contact one of the content managers of the Drive for access.
 
-(WIP: Add section related to Apps Script once the staging version has been created)
 
 ## Troubleshooting
 
@@ -193,6 +198,18 @@ In case of needing to configure our CircleCi credentials again (if clasp push su
 4. In your terminal you should now see the contents of a JSON file, there should be a key called "refresh_token", we want to copy the value associated with the "refresh_token" key (not including the double quotes)
 5. With the refresh_token go to [CircleCI referral form ingestion environment variables](https://app.circleci.com/settings/project/github/LBHackney-IT/social-care-referral-form-ingestion/environment-variables?return-to=https%3A%2F%2Fapp.circleci.com%2Fpipelines%2Fgithub%2FLBHackney-IT%2Fsocial-care-referral-form-ingestion) and remove the existing environment variable "CLASP_REFRESH_TOKEN"
 6. Now click to add a new environment variable, call it "CLASP_REFRESH_TOKEN" and give it the value of the refresh_token that you copied from your local ~/.clasprc.json file
+
+### Changing the properties for the Apps Script
+As the staging and production spreadsheet is owned by the Drive it exists within you will be unable to change the properties of the script through the legacy editor. As such you will have to manually change the properties of the script through the `PropertiesService` API within the Apps Script console.
+
+1. Go to the script which properties you wish to change.
+2. Create a new file in the script and copy and paste the following code into the function which has been generated (change the values within the `setProperty` method to your desired property):
+```text
+var scriptProperties = PropertiesService.getScriptProperties();
+scriptProperties.setProperty("PROPERTY_NAME", "PROPERTY_VALUE")
+```
+3. Save the new file and click the Run button. If successful the console will tell you when the execution of the method has finished.
+4. To check the properties have been changed successfully you can retrieve the property and log it like so `console.log(scriptProperties.getProperty("PROPERTY_NAME"))`
 
 ## Related repositories
 

@@ -66,6 +66,26 @@ jobs:
     environment:
       TZ: "Europe/London"
 
+  clasp-push-staging:
+    executor: node-executor
+    working_directory: ~/project/google-scripts
+    steps:
+      - *attach_workspace
+      - run:
+          name: create clasprc.json file in root
+          command: |
+            echo "{\"token\":{\"scope\":\"https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly\",\"token_type\":\"bearer\",\"refresh_token\":\"$CLASP_REFRESH_TOKEN\",\"access_token\":\"\"}}" > ~/.clasprc.json
+      - run:
+          name: create appsscript.json file
+          command: |
+            echo "{\"timeZone\": \"Europe\/London\",\"dependencies\": {},\"exceptionLogging\": \"STACKDRIVER\",\"runtimeVersion\": \"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
+      - run:
+          name: change script id to staging script
+          command: ./node_modules/@google/clasp/build/src/index.js setting scriptId $STAGING_APPS_SCRIPT_ID
+      - run:
+          name: Clasp push
+          command: ./node_modules/@google/clasp/build/src/index.js push --force
+
   clasp-push:
     executor: node-executor
     working_directory: ~/project/google-scripts
@@ -195,9 +215,13 @@ workflows:
       - unit-tests-apps-script:
           requires:
             - install-dependencies-apps-script
+      - clasp-push-staging:
+          requires:
+            - unit-tests-apps-script
       - clasp-push:
           requires:
             - unit-tests-apps-script
+            - clasp-push-staging
           filters:
             branches:
               only: main

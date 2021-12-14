@@ -22,7 +22,7 @@ describe("#handler", () => {
     {
       data: ["This is a test"],
       id: ["100"],
-      FormRow: ["1"],
+      SubmissionRowPosition: ["1"],
     },
   ];
 
@@ -30,12 +30,12 @@ describe("#handler", () => {
     {
       data: ["This is one"],
       id: ["1"],
-      FormRow: ["2"],
+      SubmissionRowPosition: ["2"],
     },
     {
       name: ["This is another"],
       id: ["10"],
-      FormRow: ["3"],
+      SubmissionRowPosition: ["3"],
     },
   ];
 
@@ -133,7 +133,7 @@ describe("#handler", () => {
       googleAuthToken,
       documentUrl,
       urlColumn,
-      singleS3ObjectArray[0].FormRow.toString()
+      singleS3ObjectArray[0].SubmissionRowPosition.toString()
     );
   });
 
