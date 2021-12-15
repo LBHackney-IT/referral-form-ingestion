@@ -23,7 +23,6 @@ functions:
       PRIVATE_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-gcp-service-account-private-key~true}
       TEMPLATE_DOCUMENT_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-referrals-google-doc-template-id~true}
       SPREADSHEET_ID: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-referrals-google-spreadsheet-id~true}
-      TITLE: ${opt:TITLE}
       URL_COLUMN: ${opt:URL_COLUMN}
       ENDPOINT_API: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-endpoint~true}
       AWS_KEY: ${ssm:/aws/reference/secretsmanager/social-care-referrals-${self:custom.environmentTag.${opt:stage}}-service-api-aws-key~true}

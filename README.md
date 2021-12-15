@@ -166,7 +166,6 @@ To make any changes to the current social care referral production infrastructur
 ```text
   CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
   URL_COLUMN -- column that contains the URLs to created google documents
-  TITLE -- the title of the google document
 ```
 
 ### How to configure CircleCI for automated deployment of our appscript
