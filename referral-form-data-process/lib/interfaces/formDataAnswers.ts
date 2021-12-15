@@ -1,4 +1,4 @@
-interface FormDataAnswersObject {
+export interface FormDataAnswersObject {
   referrerFirstName: string | undefined;
   referrerLastName: string | undefined;
   clientOneFirstName: string | undefined;

@@ -1,3 +1,5 @@
+import { FormDataAnswersObject } from "../interfaces/formDataAnswers";
+
 export const createListOfReferredClients = (
   formDataAnswersObject: FormDataAnswersObject
 ) => {
