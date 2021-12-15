@@ -1,3 +1,5 @@
+import { FormDataAnswersObject } from "../interfaces/formDataAnswers";
+
 export const mapFormDataToFormDataAnswersObject = (
   formData: Record<string, string[]>
 ) => {
