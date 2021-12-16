@@ -34,8 +34,10 @@ export const createMashReferralRequestObject = (
 
     //Skip if no more child information has been submitted
     if (
-      residentFormDataAnswers.firstName == undefined &&
-      residentFormDataAnswers.lastName == undefined
+      residentFormDataAnswers.firstName == undefined ||
+      (residentFormDataAnswers.firstName == "" &&
+        residentFormDataAnswers.lastName == undefined) ||
+      residentFormDataAnswers.lastName == ""
     ) {
       continue;
     }
