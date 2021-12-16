@@ -1,3 +1,9 @@
+export interface ReferrerFormDataObject {
+  referrerFirstName: string | undefined;
+  referrerLastName: string | undefined;
+  requestedSupport: string | undefined;
+}
+
 export interface ResidentFormDataObject {
   firstName: string | undefined;
   lastName: string | undefined;
@@ -11,7 +17,8 @@ export interface ResidentFormDataObject {
   addressLineThree: string | undefined;
   postcode: string | undefined;
 }
-export interface MashResidentRequest {
+
+export interface MashResidentDetails {
   firstName: string | undefined;
   lastName: string | undefined;
   dateOfBirth: string | undefined;
@@ -21,4 +28,10 @@ export interface MashResidentRequest {
   school: string | undefined;
   address: string | undefined;
   postcode: string | undefined;
+}
+
+export interface ReferralRequestObject {
+  referrer: string | undefined;
+  requestedSupport: string | undefined;
+  mashResidents: MashResidentDetails[];
 }
