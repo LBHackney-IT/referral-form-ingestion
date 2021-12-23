@@ -1,16 +1,16 @@
-import { createListOfReferredClients } from "./helpers/createListOfReferredClients";
-import { mapFormDataToFormDataAnswersObject } from "./helpers/mapFormDataToFormDataAnswersObject";
+import { createMashReferralRequestObject } from "./helpers/createMashReferralRequestObject";
 
 export const generateGoogleDocumentTitle = (
   formData: Record<string, string[]>
 ) => {
   const service = "MASH";
-  const mappedDataObject = mapFormDataToFormDataAnswersObject(formData);
-  const clientList = createListOfReferredClients(mappedDataObject);
 
-  const clientOneFullName = clientList[0];
+  const referralObject = createMashReferralRequestObject(formData);
 
-  const numberOfOtherClientsInReferral = clientList.length - 1;
+  const clientOneFullName = `${referralObject.mashResidents[0].firstName} ${referralObject.mashResidents[0].lastName}`;
+
+  const numberOfOtherClientsInReferral =
+    referralObject.mashResidents.length - 1;
 
   if (numberOfOtherClientsInReferral > 0) {
     return `${clientOneFullName} +${numberOfOtherClientsInReferral} | ${service}`;

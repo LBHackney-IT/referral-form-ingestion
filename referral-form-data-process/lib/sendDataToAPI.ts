@@ -1,6 +1,5 @@
 import axios from "axios";
-import { createListOfReferredClients } from "./helpers/createListOfReferredClients";
-import { mapFormDataToFormDataAnswersObject } from "./helpers/mapFormDataToFormDataAnswersObject";
+import { createMashReferralRequestObject } from "./helpers/createMashReferralRequestObject";
 
 export const sendDataToAPI = async (
   formData: Record<string, string[]>,
@@ -10,13 +9,12 @@ export const sendDataToAPI = async (
   const AWS_KEY = process.env.AWS_KEY as string;
   const headers = { "x-api-key": AWS_KEY };
 
-  const formDataAnswersObject = mapFormDataToFormDataAnswersObject(formData);
-  const clientsValue = createListOfReferredClients(formDataAnswersObject);
+  const referralObject = createMashReferralRequestObject(formData);
 
   const postObject = {
-    referrer: `${formDataAnswersObject.referrerFirstName} ${formDataAnswersObject.referrerLastName}`,
-    requestedSupport: formDataAnswersObject.requestedSupport,
-    clients: clientsValue,
+    referrer: referralObject.referrer,
+    requestedSupport: referralObject.requestedSupport,
+    mashResidents: referralObject.mashResidents,
     referralUri: documentURL,
   };
 
