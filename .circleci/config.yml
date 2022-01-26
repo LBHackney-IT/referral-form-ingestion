@@ -275,6 +275,7 @@ workflows:
           requires:
             - assume-role-staging
             - permit-lambda-removal-from-staging-and-mosaic-production
+            - install-dependencies-lambda
           filters:
             branches:
               only: main
