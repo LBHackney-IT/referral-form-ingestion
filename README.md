@@ -1,12 +1,35 @@
-# Social Care Referral Form Ingestion Process
+# DEPRECATED: Social Care Referral Form Ingestion Process
 
-This project processes the data submitted via the MASH (Multi agency Safeguarding Hub) Referrals Google form and enters the data into the Social Care System.
+> ⚠️ This project is no longer being actively maintained.
 
-![C4 Component Diagram](docs/mash-data-import.svg)
+## Deprecation Notes
+
+Date: 26th January 2022
+
+This project is no longer being actively maintained and some changes have been made to the codebase:
+
+1. All deployed terraform resources have been destroyed.
+  The code for the terraform module has NOT been deleted. However, the AWS resources that were created by terraform via the pipeline have been destroyed in both the staging and production AWS accounts. The pipeline was temporarily updated to teardown the terraform infrastructure.
+
+2. The lambda resources deployed via serverless have been destroyed.
+  The pipeline was temporarily updated to remove the lambda in both the staging and production AWS accounts rather than deploy to them.
+
+3. The CI/CD pipeline has been stripped of all the deployment jobs in its workflow.
+  After sucessfully deleting the infrastructure resources in both AWS accounts, the CircleCI pipeline has been simplfied to only include tests. We have remove all deployment jobs (which includes using clasp to to push code to Google Apps Script).
+
+4. We have not updated the version of this repo nor have we removed the github action related to this.
+
+5. We have updated all installed packages using `yarn upgrade --latest` as of the time of writing.
+  We have not removed any packages/dependencies.
+
+6. We have deleted all other branches.
+
+---
 
 ## Table of Contents
 
-- [Social Care Referral Form Ingestion Process](#social-care-referral-form-ingestion-process)
+- [DEPRECATED: Social Care Referral Form Ingestion Process](#deprecated-social-care-referral-form-ingestion-process)
+  - [Deprecation Notes](#deprecation-notes)
   - [Table of Contents](#table-of-contents)
   - [Documentation](#documentation)
     - [Architecture](#architecture)
@@ -33,6 +56,10 @@ This project processes the data submitted via the MASH (Multi agency Safeguardin
   - [License](#license)
 
 ## Documentation
+
+This project processes the data submitted via the MASH (Multi agency Safeguarding Hub) Referrals Google form and enters the data into the Social Care System.
+
+![C4 Component Diagram](docs/mash-data-import.svg)
 
 ### Architecture
 
@@ -152,21 +179,21 @@ To make any changes to the current social care referral production infrastructur
 
 1. The following environment variables are saved as secrets in AWS:
 
-```text
-  CLIENT_EMAIL -- the email associated with the Google Service account
-  PRIVATE_KEY -- the private key of the Google Service account
-  SPREADSHEET_ID -- the id of the google spreadsheet that we update
-  TEMPLATE_DOCUMENT_ID -- the id of google doc we use as a template for creating new documents
-  ENDPOINT_API -- endpoint url for the service API
-  AWS_KEY -- API key to allow the lambda to call the service API
-```
+    ```text
+      CLIENT_EMAIL -- the email associated with the Google Service account
+      PRIVATE_KEY -- the private key of the Google Service account
+      SPREADSHEET_ID -- the id of the google spreadsheet that we update
+      TEMPLATE_DOCUMENT_ID -- the id of google doc we use as a template for creating new documents
+      ENDPOINT_API -- endpoint url for the service API
+      AWS_KEY -- API key to allow the lambda to call the service API
+    ```
 
 2. The following environment variables are saved in the Circle CI project settings:
 
-```text
-  CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
-  URL_COLUMN -- column that contains the URLs to created google documents
-```
+    ```text
+      CLASP_REFRESH_TOKEN -- the refresh token to authenticate Clasp with Google
+      URL_COLUMN -- column that contains the URLs to created google documents
+    ```
 
 ### How to configure CircleCI for automated deployment of our appscript
 
@@ -184,7 +211,6 @@ Due to the interaction between Google services such as Google Forms, Docs and Sh
 
 A staging version of the Google Form, Document template, Sheet and Apps script has been created to allow the ability to test the Google related services manually. The Google Form, Document Template and Sheet are held on the shared Google Drive for the Social Care project and has its own folder called _Referrals-MASH Workflow_. If you do not have access to this Drive you can contact one of the content managers of the Drive for access.
 
-
 ## Troubleshooting
 
 ### Clasp push suddenly stops working
@@ -199,15 +225,19 @@ In case of needing to configure our CircleCi credentials again (if clasp push su
 6. Now click to add a new environment variable, call it "CLASP_REFRESH_TOKEN" and give it the value of the refresh_token that you copied from your local ~/.clasprc.json file
 
 ### Changing the properties for the Apps Script
+
 As the staging and production spreadsheet is owned by the Drive it exists within you will be unable to change the properties of the script through the legacy editor. As such you will have to manually change the properties of the script through the `PropertiesService` API within the Apps Script console.
 
 1. Go to the script which properties you wish to change.
 2. Create a new file in the script and copy and paste the following code into the function which has been generated (change the values within the `setProperty` method to your desired property):
-```text
-var scriptProperties = PropertiesService.getScriptProperties();
-scriptProperties.setProperty("PROPERTY_NAME", "PROPERTY_VALUE")
-```
+
+    ```text
+    var scriptProperties = PropertiesService.getScriptProperties();
+    scriptProperties.setProperty("PROPERTY_NAME", "PROPERTY_VALUE")
+    ```
+
 3. Save the new file and click the Run button. If successful the console will tell you when the execution of the method has finished.
+
 4. To check the properties have been changed successfully you can retrieve the property and log it like so `console.log(scriptProperties.getProperty("PROPERTY_NAME"))`
 
 ## Related repositories
@@ -223,7 +253,6 @@ scriptProperties.setProperty("PROPERTY_NAME", "PROPERTY_VALUE")
 
 - **Marta Pederiva**, Junior Developer at Hackney (marta.pederiva@hackney.gov.uk)
 - **Miles Alford**, Software Developer Apprentice at Hackney (miles.alford@hackney.gov.uk)
-- **John Farrell**, Senior Software Engineer at Made Tech (john.farrell@hackney.gov.uk)
 - **Renny Fadoju**, Software Engineer at Made Tech (renny.fadoju@hackney.gov.uk)
 
 ## License
