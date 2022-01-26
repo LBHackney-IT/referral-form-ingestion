@@ -103,9 +103,9 @@ jobs:
           name: Clasp push
           command: ./node_modules/@google/clasp/build/src/index.js push --force
 
-  terraform-init-then-apply-to-staging:
+  plan-terraform-removal:
     executor: docker-terraform
-    description: "Initializes and applies terraform configuration for AWS MASH Resources"
+    description: "Create plan for removing all resources created via Terraform"
     working_directory: ~/project/terraform/mash-setup-staging
     steps:
       - *attach_workspace
@@ -115,9 +115,25 @@ jobs:
             terraform get -update=true
             terraform init -backend-config="bucket=terraform-state-staging-apis" -backend-config="region=eu-west-2" -backend-config="key=social-care-referrals/staging-terraform.tfstate" -backend-config="encrypt=true"
       - run:
-          name: apply
+          name: plan
           command: |
-            terraform apply -auto-approve
+            terraform plan -destroy
+
+  remove-terraform-resources:
+    executor: docker-terraform
+    description: "Remove all resources created via Terraform"
+    working_directory: ~/project/terraform/mash-setup-staging
+    steps:
+      - *attach_workspace
+      - run:
+          name: get and init
+          command: |
+            terraform get -update=true
+            terraform init -backend-config="bucket=terraform-state-staging-apis" -backend-config="region=eu-west-2" -backend-config="key=social-care-referrals/staging-terraform.tfstate" -backend-config="encrypt=true"
+      - run:
+          name: destroy
+          command: |
+            terraform destroy -auto-approve
 
   assume-role-staging:
     executor: docker-python
@@ -180,29 +196,23 @@ jobs:
     environment:
       TZ: "Europe/London"
 
-  deploy-lambda-to-staging:
+  remove-lambda-from-staging:
     executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - run:
-          name: Compile lambda
-          command: yarn tsc main.ts
-      - run:
-          name: "deploy lambda"
-          command: "yarn deploy -s staging --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --URL_COLUMN $URL_COLUMN --SPREADSHEET_ID $SPREADSHEET_ID"
-      - persist_to_workspace:
-          root: *workspace_root
-          paths: .
+          name: Remove resources
+          command: "yarn remove -s staging"
 
-  deploy-lambda-to-mosaic-production:
+  remove-lambda-from-mosaic-production:
     executor: node-executor
     working_directory: ~/project/referral-form-data-process
     steps:
       - *attach_workspace
       - run:
-          name: "deploy"
-          command: "yarn deploy -s mosaic-prod --CLIENT_EMAIL $CLIENT_EMAIL --PRIVATE_KEY $PRIVATE_KEY --TEMPLATE_DOCUMENT_ID $TEMPLATE_DOCUMENT_ID --URL_COLUMN $URL_COLUMN --SPREADSHEET_ID $SPREADSHEET_ID --ENDPOINT_API $ENDPOINT_API --AWS_KEY $AWS_KEY"
+          name: Remove resources
+          command: "yarn remove -s mosaic-prod"
 
 workflows:
   version: 2
@@ -225,6 +235,12 @@ workflows:
           filters:
             branches:
               only: main
+      - install-dependencies-lambda:
+          requires:
+            - checkout
+      - unit-tests-lambda:
+          requires:
+            - install-dependencies-lambda
       - assume-role-staging:
           context: api-assume-role-staging-context
           requires:
@@ -232,40 +248,44 @@ workflows:
           filters:
             branches:
               only: main
-      - terraform-init-then-apply-to-staging:
+      - plan-terraform-removal:
           requires:
             - assume-role-staging
           filters:
             branches:
               only: main
-      - install-dependencies-lambda:
+      - permit-staging-terraform-removal:
+          type: approval
           requires:
-            - checkout
-      - unit-tests-lambda:
-          requires:
-            - install-dependencies-lambda
-      - deploy-lambda-to-staging:
-          requires:
-            - unit-tests-lambda
-            - terraform-init-then-apply-to-staging
+            - plan-terraform-removal
           filters:
             branches:
               only: main
-      - permit-lambda-deploy-mosaic-prod:
+      - remove-terraform-resources:
+          requires:
+            - permit-staging-terraform-removal
+      - permit-lambda-removal-from-staging-and-mosaic-production:
           type: approval
           requires:
-            - deploy-lambda-to-staging
+            - remove-terraform-resources
+          filters:
+            branches:
+              only: main
+      - remove-lambda-from-staging:
+          requires:
+            - assume-role-staging
+            - permit-lambda-removal-from-staging-and-mosaic-production
           filters:
             branches:
               only: main
       - assume-role-mosaic-production:
           context: api-assume-role-social-care-production-context
           requires:
-            - permit-lambda-deploy-mosaic-prod
+            - permit-lambda-removal-from-staging-and-mosaic-production
           filters:
             branches:
               only: main
-      - deploy-lambda-to-mosaic-production:
+      - remove-lambda-from-mosaic-production:
           requires:
             - assume-role-mosaic-production
           filters:
