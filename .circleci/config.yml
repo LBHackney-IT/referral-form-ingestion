@@ -203,7 +203,7 @@ jobs:
       - *attach_workspace
       - run:
           name: Remove resources
-          command: "yarn remove -s staging"
+          command: "yarn destroy -s staging"
 
   remove-lambda-from-mosaic-production:
     executor: node-executor
@@ -212,7 +212,7 @@ jobs:
       - *attach_workspace
       - run:
           name: Remove resources
-          command: "yarn remove -s mosaic-prod"
+          command: "yarn destroy -s mosaic-prod"
 
 workflows:
   version: 2

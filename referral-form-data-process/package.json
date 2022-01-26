@@ -6,7 +6,8 @@
     "test": "jest",
     "lint": "prettier --check .",
     "format": "prettier --write .",
-    "deploy": "sls deploy"
+    "deploy": "sls deploy",
+    "destroy": "sls remove"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.84",
