@@ -8,12 +8,6 @@ executors:
   node-executor:
     docker:
       - image: cimg/node:14.18.0
-  docker-python:
-    docker:
-      - image: circleci/python:3.7
-  docker-terraform:
-    docker:
-      - image: "hashicorp/terraform:light"
 
 references:
   workspace_root: &workspace_root "~"
@@ -66,101 +60,6 @@ jobs:
     environment:
       TZ: "Europe/London"
 
-  clasp-push-staging:
-    executor: node-executor
-    working_directory: ~/project/google-scripts
-    steps:
-      - *attach_workspace
-      - run:
-          name: create clasprc.json file in root
-          command: |
-            echo "{\"token\":{\"scope\":\"https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly\",\"token_type\":\"bearer\",\"refresh_token\":\"$CLASP_REFRESH_TOKEN\",\"access_token\":\"\"}}" > ~/.clasprc.json
-      - run:
-          name: create appsscript.json file
-          command: |
-            echo "{\"timeZone\": \"Europe\/London\",\"dependencies\": {},\"exceptionLogging\": \"STACKDRIVER\",\"runtimeVersion\": \"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
-      - run:
-          name: change script id to staging script
-          command: ./node_modules/@google/clasp/build/src/index.js setting scriptId $STAGING_APPS_SCRIPT_ID
-      - run:
-          name: Clasp push
-          command: ./node_modules/@google/clasp/build/src/index.js push --force
-
-  clasp-push:
-    executor: node-executor
-    working_directory: ~/project/google-scripts
-    steps:
-      - *attach_workspace
-      - run:
-          name: create clasprc.json file in root
-          command: |
-            echo "{\"token\":{\"scope\":\"https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/script.deployments https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/service.management https://www.googleapis.com/auth/logging.read https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/script.webapp.deploy https://www.googleapis.com/auth/script.projects https://www.googleapis.com/auth/drive.metadata.readonly\",\"token_type\":\"bearer\",\"refresh_token\":\"$CLASP_REFRESH_TOKEN\",\"access_token\":\"\"}}" > ~/.clasprc.json
-      - run:
-          name: create appsscript.json file
-          command: |
-            echo "{\"timeZone\": \"Europe\/London\",\"dependencies\": {},\"exceptionLogging\": \"STACKDRIVER\",\"runtimeVersion\": \"V8\"}" > ~/project/google-scripts/process-form-submission/appsscript.json
-      - run:
-          name: Clasp push
-          command: ./node_modules/@google/clasp/build/src/index.js push --force
-
-  plan-terraform-removal:
-    executor: docker-terraform
-    description: "Create plan for removing all resources created via Terraform"
-    working_directory: ~/project/terraform/mash-setup-staging
-    steps:
-      - *attach_workspace
-      - run:
-          name: get and init
-          command: |
-            terraform get -update=true
-            terraform init -backend-config="bucket=terraform-state-staging-apis" -backend-config="region=eu-west-2" -backend-config="key=social-care-referrals/staging-terraform.tfstate" -backend-config="encrypt=true"
-      - run:
-          name: plan
-          command: |
-            terraform plan -destroy
-
-  remove-terraform-resources:
-    executor: docker-terraform
-    description: "Remove all resources created via Terraform"
-    working_directory: ~/project/terraform/mash-setup-staging
-    steps:
-      - *attach_workspace
-      - run:
-          name: get and init
-          command: |
-            terraform get -update=true
-            terraform init -backend-config="bucket=terraform-state-staging-apis" -backend-config="region=eu-west-2" -backend-config="key=social-care-referrals/staging-terraform.tfstate" -backend-config="encrypt=true"
-      - run:
-          name: destroy
-          command: |
-            terraform destroy -auto-approve
-
-  assume-role-staging:
-    executor: docker-python
-    steps:
-      - checkout
-      - aws_assume_role/assume_role:
-          account: $AWS_ACCOUNT_STAGING
-          profile_name: default
-          role: "LBH_Circle_CI_Deployment_Role"
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - .aws
-
-  assume-role-mosaic-production:
-    executor: docker-python
-    steps:
-      - checkout
-      - aws_assume_role/assume_role:
-          account: $AWS_ACCOUNT_PRODUCTION
-          profile_name: default
-          role: "circleci-assume-role"
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - .aws
-
   install-dependencies-lambda:
     executor: node-executor
     working_directory: ~/project/referral-form-data-process
@@ -196,24 +95,6 @@ jobs:
     environment:
       TZ: "Europe/London"
 
-  remove-lambda-from-staging:
-    executor: node-executor
-    working_directory: ~/project/referral-form-data-process
-    steps:
-      - *attach_workspace
-      - run:
-          name: Remove resources
-          command: "yarn destroy -s staging"
-
-  remove-lambda-from-mosaic-production:
-    executor: node-executor
-    working_directory: ~/project/referral-form-data-process
-    steps:
-      - *attach_workspace
-      - run:
-          name: Remove resources
-          command: "yarn destroy -s mosaic-prod"
-
 workflows:
   version: 2
   process-form-submission:
@@ -225,70 +106,9 @@ workflows:
       - unit-tests-apps-script:
           requires:
             - install-dependencies-apps-script
-      - clasp-push-staging:
-          requires:
-            - unit-tests-apps-script
-      - clasp-push:
-          requires:
-            - unit-tests-apps-script
-            - clasp-push-staging
-          filters:
-            branches:
-              only: main
       - install-dependencies-lambda:
           requires:
             - checkout
       - unit-tests-lambda:
           requires:
             - install-dependencies-lambda
-      - assume-role-staging:
-          context: api-assume-role-staging-context
-          requires:
-            - checkout
-          filters:
-            branches:
-              only: main
-      - plan-terraform-removal:
-          requires:
-            - assume-role-staging
-          filters:
-            branches:
-              only: main
-      - permit-staging-terraform-removal:
-          type: approval
-          requires:
-            - plan-terraform-removal
-          filters:
-            branches:
-              only: main
-      - remove-terraform-resources:
-          requires:
-            - permit-staging-terraform-removal
-      - permit-lambda-removal-from-staging-and-mosaic-production:
-          type: approval
-          requires:
-            - remove-terraform-resources
-            - install-dependencies-lambda
-          filters:
-            branches:
-              only: main
-      - remove-lambda-from-staging:
-          requires:
-            - assume-role-staging
-            - permit-lambda-removal-from-staging-and-mosaic-production
-          filters:
-            branches:
-              only: main
-      - assume-role-mosaic-production:
-          context: api-assume-role-social-care-production-context
-          requires:
-            - permit-lambda-removal-from-staging-and-mosaic-production
-          filters:
-            branches:
-              only: main
-      - remove-lambda-from-mosaic-production:
-          requires:
-            - assume-role-mosaic-production
-          filters:
-            branches:
-              only: main
